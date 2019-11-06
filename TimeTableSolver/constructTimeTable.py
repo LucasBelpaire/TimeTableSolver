@@ -2,6 +2,7 @@ import time
 import data  # TODO: nog veranderen naar de jusite klasse, waar zit de lijst van alle events?
 import hardConstraints
 import random
+import processInput
 
 
 # This function will constructs a feasible solution or a partially feasible solution
@@ -11,49 +12,49 @@ def construct_time_table():
     start_construct = time.clock()
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
-    while (len(data.events) > 0 or len(data.unplacedEvents) > 0) and time.clock()-start_construct < 90:
+    while (len(processInput.events) > 0 or len(processInput.unplaced_events) > 0) and time.clock()-start_construct < 90:
 
         # Construct a time table with the remaining events
-        events_size = len(data.events)
+        events_size = len(processInput.events)
         for index in range(events_size):
             # get an event from the list and look if we can place it on a position
-            curren_event = data.events.pop()
-            all_av_positions = order_positions_by_priority(curren_event)
+            current_event = processInput.events.pop()
+            all_av_positions = order_positions_by_priority(current_event)
             # if this list of positions is empty, than we didn't find a place to put this event
             # so now we change this event from unassigned to unplaced
             if not all_av_positions:
-                data.unplacedEvents.append(curren_event)
+                processInput.unplaced_events.append(current_event)
             else:
-                hardConstraints.assign_course_to_position(curren_event, all_av_positions[0])
+                hardConstraints.assign_course_to_position(current_event, all_av_positions[0])
 
-        unplaced_events_size = len(data.unplacedEvents)
-        # random.shuffle(data.unplacedEvents)->TODO: gaan we dit gebruiken, randomness introduceren,is dit een voordeel?
+        unplaced_events_size = len(processInput.unplaced_events)
+
         new_positions = []
         
         # The following lines of code will remove some random events that are already placed in the timetable
         # all the unplaced_events couldn't be assinged to any open position in the timetable
         # so it is necessary to create new open positions by randomly removing events.
         for index in range(unplaced_events_size):
-            random_position = random.choice(data.forbiddenPositions)
+            random_position = random.choice(processInput.forbidden_positions)
             current_random_event = hardConstraints.remove_event_at_position(random_position)
-            data.forbiddenPositions.remove(random_position)
-            data.events.append(current_random_event)
+            processInput.forbidden_positions.remove(random_position)
+            processInput.events.append(current_random_event)
             new_positions.append(random_position)
 
         # The next for loop will try to assign some unplaced events in the free timeslot in the timetable
         for index in range(unplaced_events_size):
-            current_unplaced_event = data.unplacedEvents.pop()
-            is_assinged = False
+            current_unplaced_event = processInput.unplaced_events.pop()
+            is_assigned = False
             for pos in new_positions:
                 if hardConstraints.course_fits_in_to_time_slot(current_unplaced_event, pos[1]):
                     hardConstraints.assign_course_to_position(current_unplaced_event, pos)
                     new_positions.remove(pos)
-                    is_assinged = True
+                    is_assigned = True
                     break
-            if not is_assinged:
-                data.events.append(current_unplaced_event)
+            if not is_assigned:
+                processInput.events.append(current_unplaced_event)
 
-    return len(data.events)
+    return len(processInput.events)
 
 
 # This function returns a list of all positions in the timetable that this event can be placed.
