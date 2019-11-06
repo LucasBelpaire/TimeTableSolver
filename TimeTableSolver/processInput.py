@@ -47,6 +47,7 @@ for course in project_json['vakken']:
             new_curriculum = data.Curriculum(code=curriculum_code,
                                              mt1=mt1,
                                              home_site=home_site)
+            curricula_dict[curriculum_code] = new_curriculum
         else:
             new_curriculum = curricula_dict[curriculum_code]
         curricula.append(new_curriculum)
@@ -66,7 +67,7 @@ for site in project_json['sites']:
     code = site['code']
     name = site['naam']
     x_coord = site['xcoord']
-    y_coord = site['y_coord']
+    y_coord = site['ycoord']
     class_rooms = []
     for classroom in site['lokalen']:
         fi_number = classroom['finummer']
