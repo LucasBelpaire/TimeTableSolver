@@ -59,10 +59,11 @@ class Site:
 
 
 class ClassRoom:
-    def __init__(self, fi_number, name, capacity):
+    def __init__(self, fi_number, name, capacity, site_id):
         self.fi_number = fi_number
         self.name = name
         self.capacity = capacity
+        self.site_id = site_id
 
 
 class CourseEvent:

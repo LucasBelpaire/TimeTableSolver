@@ -76,7 +76,8 @@ for site in project_json['sites']:
             capacity = classroom['capaciteit']
             new_classroom = data.ClassRoom(fi_number=fi_number,
                                            name=classroom_name,
-                                           capacity=capacity)
+                                           capacity=capacity,
+                                           site_id=code)
         else:
             new_classroom = classrooms_dict[fi_number]
         class_rooms.append(new_classroom)

@@ -36,7 +36,8 @@ def timeslot_already_has_this_curriculum(event, timeslot):
 # it returns True if there is enough space, otherwise False
 # Hard Constraint: we can't exceed the room capacity 
 def room_capacity_constraint(course, room):
-
+    if course.student_amount <= room.capacity:
+        return True
     return False
 
 

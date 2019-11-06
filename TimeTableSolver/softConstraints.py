@@ -14,8 +14,13 @@ import hardConstraints
 #
 def does_course_fits_in_position(course, position):
     #extract the room and timeslot from the course
-    # TODO: deze functie moet nog rekening houden met de hard constraint voor de roomcapacityç!!
-    room, timeslot = position
-    return hardConstraints.course_fits_in_to_time_slot(course, timeslot)
+
+    room, time_slot = position
+
+    return hardConstraints.course_fits_in_to_time_slot(course, time_slot) \
+           and hardConstraints.room_capacity_constraint(course, room)
 
 
+def room_is_at_home_base(room, course):
+    # TODO: zorg dat course ook een array home_site_id heeft, alle homesites van de curricula waartoe het behoort
+    return False

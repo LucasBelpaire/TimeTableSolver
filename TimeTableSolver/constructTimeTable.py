@@ -3,11 +3,13 @@ import data  # TODO: nog veranderen naar de jusite klasse, waar zit de lijst van
 import hardConstraints
 import random
 import processInput
+import softConstraints
 
 
 # This function will constructs a feasible solution or a partially feasible solution
 # it will also terminate when no solution is found in a specific time span
 def construct_time_table():
+
     # we hold the starting time while processing a time table
     start_construct = time.clock()
 
@@ -68,6 +70,13 @@ def order_positions_by_priority(event):
     feasible_pos = []
 
     # TODO: hoe hervormen we deze functie?
+    for position in processInput.empty_positions:
+        if softConstraints.does_course_fits_in_position(event, position):
+            # TODO:afwerken
+            return False
+        elif hardConstraints.course_fits_in_to_time_slot(event, position[1]):
+            # TODO:afwerken
+            return False
 
     all_possible_pos = hard_pos + feasible_pos
     return all_possible_pos
