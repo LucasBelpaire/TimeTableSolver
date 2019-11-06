@@ -60,9 +60,8 @@ class ClassRoom:
 
 
 class CourseEvent:
-    def __init__(self, course, course_hours, class_room, days, weeks):
+    def __init__(self, course, course_hours, class_room, time_slot):
         self.course = course
         self.course_hours = course_hours
         self.class_room = class_room
-        self.days = days
-        self.weeks = weeks
+        self.time_slot = time_slot
