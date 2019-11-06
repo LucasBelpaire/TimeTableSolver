@@ -1,4 +1,5 @@
 import data
+import processInput
 
 # This function will check if a specific timeslot has a given lecture
 # Hard Constraint: Students can only follow one lecture at a time from one curriculum
@@ -46,8 +47,8 @@ def remove_event_at_position(position_of_event):
 
     rem_event = data.timetable[position_of_event]
     if rem_event is not None:
-        data.timetable[position_of_event] = None
-        data.emptyPositions.append(position_of_event)
+        processInput.time_table[position_of_event] = None
+        processInput.empty_positions.append(position_of_event)
 
     return rem_event
 

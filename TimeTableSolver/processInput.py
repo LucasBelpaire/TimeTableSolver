@@ -87,7 +87,7 @@ for site in project_json['sites']:
                          class_rooms=class_rooms)
 
 
-# TODO: de events nog aanmaken
+
 events = []
 for course in courses_dict.values():
     events = events + course.course_events
@@ -98,3 +98,12 @@ unplaced_events = []
 
 # this list will contain all positions that already have been assigned to a event
 forbidden_positions = []
+
+numberOfTimeslots = 40 * 13
+
+time_table = {}
+empty_positions = []
+for room in range(len(classrooms_dict)):
+    for time in range(len(numberOfTimeslots)):
+        empty_positions.append((room, time))
+        time_table[(room, time)] = None
