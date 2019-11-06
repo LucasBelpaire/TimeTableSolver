@@ -29,9 +29,10 @@ class Course:
         self.curricula = curricula
         self.course_events = []
         for i in range(int(self.real_hours)):
-            self.course_events = CourseEvent(course_code=code,
-                                             lecturers=lecturers,
-                                             event_number=i)
+            course_event = CourseEvent(course_code=code,
+                                       lecturers=lecturers,
+                                       event_number=i)
+            self.course_events.append(course_event)
 
 
 class Lecturer:

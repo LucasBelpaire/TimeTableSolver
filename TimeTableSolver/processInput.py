@@ -85,3 +85,16 @@ for site in project_json['sites']:
                          x_coord=x_coord,
                          y_coord=y_coord,
                          class_rooms=class_rooms)
+
+
+# TODO: de events nog aanmaken
+events = []
+for course in courses_dict.values():
+    events = events + course.course_events
+
+print(events)
+# all events that couldn't be placed in the construct phase
+unplaced_events = []
+
+# this list will contain all positions that already have been assigned to a event
+forbidden_positions = []
