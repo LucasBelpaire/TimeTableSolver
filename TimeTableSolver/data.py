@@ -27,6 +27,11 @@ class Course:
         self.real_hours = contact_hours*0.8
         self.lecturers = lecturers
         self.curricula = curricula
+        self.course_events = []
+        for i in range(int(self.real_hours)):
+            self.course_events = CourseEvent(course_code=code,
+                                             lecturers=lecturers,
+                                             event_number=i)
 
 
 class Lecturer:
@@ -60,8 +65,7 @@ class ClassRoom:
 
 
 class CourseEvent:
-    def __init__(self, course, course_hours, class_room, time_slot):
-        self.course = course
-        self.course_hours = course_hours
-        self.class_room = class_room
-        self.time_slot = time_slot
+    def __init__(self, course_code, lecturers, event_number):
+        self.course_code = course_code
+        self.lecturers = lecturers
+        self.event_number = event_number
