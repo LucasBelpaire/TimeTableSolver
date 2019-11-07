@@ -90,9 +90,8 @@ def compute_amount_of_available_time_slots(course):
     """
     amount = 0
     for i in range(processInput.number_of_time_slots):
-        for room in processInput.class_rooms_dict.values():
-            if hardConstraints.course_fits_in_to_time_slot(course, i, room):
-                amount += 1
+        if hardConstraints.course_fits_in_to_time_slot(course, i):
+            amount += 1
     return amount
 
 
@@ -185,21 +184,14 @@ def order_course_events_by_priority(courses):
         # highest priority
         # we invert the solution, because the lowest value has the highest priority
         # and we want to order from biggest priority value to smallest
-        course_ranking[course.code].append(1/get_events_ranking1(course, lectures_amount[course.code])
-                                           if get_events_ranking1(course, lectures_amount[course.code]) != 0
+        rank1 = get_events_ranking1(course, lectures_amount[course.code])
+        course_ranking[course.code].append(1/rank1
+                                           if rank1 != 0
                                            else 0)
         course_ranking[course.code].append(get_events_ranking2(course, courses))
 
-    courses_sorted = list(courses)
-    courses_sorted.sort(key=lambda cr: course_ranking[cr.code])
-    for c in courses_sorted:
-        print(c.code)
-
-    print(course_ranking['B001352A'])
-    print(course_ranking['H002121A'])
-    print(course_ranking['H001719A'])
-    print(course_ranking['I001035A'])
-    print(course_ranking['C003119A'])
+    courses_sorted = courses
+    courses_sorted.sort(key=lambda cr: course_ranking[cr.code], reverse=True)
+    return courses_sorted
 
 
-order_course_events_by_priority(processInput.courses_dict.values())
