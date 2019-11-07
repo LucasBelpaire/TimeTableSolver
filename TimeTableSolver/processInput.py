@@ -25,6 +25,8 @@ for course in project_json['vakken']:
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
     contact_hours = course['contacturen']
+    if contact_hours is 0:
+        continue
     lecturers = []
     for lecturer in course['lesgevers']:
         ugent_id = lecturer['UGentid']
@@ -62,7 +64,7 @@ for course in project_json['vakken']:
 # transform all sites into objects and save them into dictionary
 # do the same for classrooms
 sites_dict = {}
-classrooms_dict = {}
+class_rooms_dict = {}
 for site in project_json['sites']:
     code = site['code']
     name = site['naam']
@@ -71,15 +73,16 @@ for site in project_json['sites']:
     class_rooms = []
     for classroom in site['lokalen']:
         fi_number = classroom['finummer']
-        if fi_number not in classrooms_dict:
+        if fi_number not in class_rooms_dict:
             classroom_name = classroom['naam']
             capacity = classroom['capaciteit']
             new_classroom = data.ClassRoom(fi_number=fi_number,
                                            name=classroom_name,
                                            capacity=capacity,
                                            site_id=code)
+            class_rooms_dict[fi_number] = new_classroom
         else:
-            new_classroom = classrooms_dict[fi_number]
+            new_classroom = class_rooms_dict[fi_number]
         class_rooms.append(new_classroom)
     new_site = data.Site(code=code,
                          name=name,
@@ -93,7 +96,6 @@ events = []
 for course in courses_dict.values():
     events = events + course.course_events
 
-print(events)
 # all events that couldn't be placed in the construct phase
 unplaced_events = []
 
@@ -104,7 +106,7 @@ number_of_time_slots = 40
 
 time_table = {}
 empty_positions = []
-for room in classrooms_dict.values():
+for room in class_rooms_dict.values():
     for time in range(number_of_time_slots):
         room_fi_number = room.fi_number
         empty_positions.append((room, time))
