@@ -10,7 +10,7 @@ def time_slot_already_has_this_teacher(course, timeslot):
         return False
 
     occupied_lecturers = []
-    for room in processInput.classrooms_dict.values():
+    for room in processInput.class_rooms_dict.values():
         room_fi_number = room.fi_number
         if processInput.time_table[(room_fi_number, timeslot)] is not None:
             existing_event = processInput.time_table[(room_fi_number, timeslot)]
@@ -30,13 +30,13 @@ def is_class_room_free(room, time_slot):
 
 # this function will return True if there is already a lecture of the same curriculum at this timeslot
 # Hard Constraint: Students can only follow one lecture at a time from one curriculum
-def timeslot_already_has_this_curriculum(event, timeslot):
+def timeslot_already_has_this_curriculum(course, timeslot):
 
-    if event is None:
+    if course is None:
         return False
 
-    current_event_curricula = processInput.courses_dict[event.course_code]
-    for room in processInput.classrooms_dict.values():
+    current_event_curricula = processInput.courses_dict[course.code]
+    for room in processInput.class_rooms_dict.values():
         room_fi_number = room.fi_number
         if processInput.time_table[(room_fi_number, timeslot)] is not None:
             existing_event = processInput.time_table[(room_fi_number, timeslot)]
