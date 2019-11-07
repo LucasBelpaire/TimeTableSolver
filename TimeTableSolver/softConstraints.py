@@ -8,19 +8,31 @@
  - Vermijd dat studenten op sommige dagen slechts één lesuur hebben
 
 """
-import hardConstraints
+import processInput
+from haversine import haversine
 
-#
-#
-def does_course_fits_in_position(course, position):
-    #extract the room and timeslot from the course
+
+def return_not_home_penalty(position, course_event):
+    """
+
+    :param position:
+    :param course_event:
+    :return:
+    """
+    penalty = 0
 
     room, time_slot = position
+    class_room_site_id = room.site_id
+    class_room_site = processInput.sites_dict[class_room_site_id]
 
-    return hardConstraints.course_fits_in_to_time_slot(course, time_slot) \
-           and hardConstraints.room_capacity_constraint(course, room)
+    current_course = processInput.courses_dict[course_event.course_code]
+    curricula_of_course = current_course.curricula
 
+    distances_of_all_sites = []
+    for curriculum in curricula_of_course:
+        x_coord_class = class_room_site.x_coord
+        y_coord_class = class_room_site.y_coord
 
-def room_is_at_home_base(room, course):
-    # TODO: zorg dat course ook een array home_site_id heeft, alle homesites van de curricula waartoe het behoort
-    return False
+        home_of_curriculum = curriculum.home_site
+        x_coord_home_of_curriculum = home_of_curriculum.x_coord
+        y_coord_home_of_curriculum = home_of_curriculum.y_coord

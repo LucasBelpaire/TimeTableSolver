@@ -100,11 +100,12 @@ unplaced_events = []
 # this list will contain all positions that already have been assigned to a event
 forbidden_positions = []
 
-numberOfTimeslots = 40 * 13
+number_of_time_slots = 40
 
 time_table = {}
 empty_positions = []
-for room in range(len(classrooms_dict)):
-    for time in range(len(numberOfTimeslots)):
+for room in classrooms_dict.values():
+    for time in range(number_of_time_slots):
+        room_fi_number = room.fi_number
         empty_positions.append((room, time))
-        time_table[(room, time)] = None
+        time_table[(room_fi_number, time)] = None
