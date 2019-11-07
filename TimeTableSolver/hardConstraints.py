@@ -84,7 +84,7 @@ def assign_course_to_position(course_event, position):
 # This is the main function of the hardconstraint class, it will check if the course fits in
 # the timeslot without breaking any hard constraints
 # this function returns True or False
-def course_fits_in_to_time_slot(course, time_slot, room):
+def course_fits_in_to_time_slot(course, time_slot):
     """
 
     :param course: The course we want to assign
@@ -93,7 +93,4 @@ def course_fits_in_to_time_slot(course, time_slot, room):
     :return: This returns true if the course can be assigned to a specific time_slot and room
     """
     return not time_slot_already_has_this_teacher(course, time_slot) \
-           and not timeslot_already_has_this_curriculum(course, time_slot) \
-           and room_capacity_constraint(course, room) and \
-           is_class_room_free(room, time_slot)
-
+           and not timeslot_already_has_this_curriculum(course, time_slot)
