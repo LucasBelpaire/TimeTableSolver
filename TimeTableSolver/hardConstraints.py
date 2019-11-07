@@ -26,7 +26,7 @@ def time_slot_already_has_this_teacher(course, timeslot):
 
 
 def is_class_room_free(room, time_slot):
-    return processInput.time_table[(room, time_slot)] is None
+    return processInput.time_table[(room.fi_number, time_slot)] is None
 
 # this function will return True if there is already a lecture of the same curriculum at this timeslot
 # Hard Constraint: Students can only follow one lecture at a time from one curriculum
