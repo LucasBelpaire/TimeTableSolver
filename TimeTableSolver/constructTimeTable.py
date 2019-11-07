@@ -4,6 +4,7 @@ import hardConstraints
 import random
 import processInput
 import softConstraints
+import math
 
 
 # This function will constructs a feasible solution or a partially feasible solution
@@ -80,3 +81,109 @@ def order_positions_by_priority(event):
 
     all_possible_pos = hard_pos + feasible_pos
     return all_possible_pos
+
+
+def compute_amount_of_available_time_slots(course):
+    """
+    :param course: an instance of course
+    :return: the total number of available time slots for the given course
+    """
+    amount = 0
+    for i in range(processInput.number_of_times_lots):
+        for room in processInput.classrooms_dict.values():
+            if hardConstraints.course_fits_in_to_time_slot(course, i, room):
+                amount += 1
+    return amount
+
+
+def get_events_ranking1(course, amount_of_events):
+    """
+    Returns priority based on courses which consist of many lectures,
+    but have only a small number of available time slots.
+    A smaller value means a higher priority.
+    :param course: an instance of course
+    :param amount_of_events: number of events that will take place for the given course
+    :return: the rank of the given course
+    """
+    total_number_of_available_time_slots = compute_amount_of_available_time_slots(course)
+    rank = total_number_of_available_time_slots / math.sqrt(amount_of_events)
+    return rank
+
+
+def have_common_lecturers(course_a, course_b):
+    """
+    Checks if the two courses have a common lecturer.
+    :param course_a: instance of course
+    :param course_b: instance of course
+    :return: True if there is at least one common lecturer, False otherwise
+    """
+    for lecturer in course_a.lecturers:
+        if lecturer in course_b.lecturers:
+            return True
+    return False
+
+
+def have_common_curricula(course_a, course_b):
+    """
+    Checks if two courses have a common curriculum
+    :param course_a: instance of course
+    :param course_b: instance of course
+    :return: True if there is at least one common curriculum, False otherwise
+    """
+    for curriculum in course_a.curricula:
+        if curriculum in course_b.curricula:
+            return True
+    return False
+
+
+def get_events_ranking2(course, courses):
+    """
+    Order priority by conflict, a conflict is a course_event with has the same lecturer as another event,
+    or is part of the same curriculum of another event.
+    :param course: an instance of course
+    :param courses: all courses
+    :return: the rank of the given course
+    """
+    amount = 0
+    for curr_course in courses:
+        if course != curr_course:
+            if have_common_lecturers(course, curr_course) or have_common_curricula(course, curr_course):
+                amount += 1
+    rank = amount
+    return rank
+
+
+def count_lectures_per_course(courses_dict):
+    """
+    Get the amount of lectures per course.
+    :return: a dictionary with the course_id as key, and the amount of courses as value.
+    """
+    lectures_amount = {}
+    for course in courses_dict.values():
+        code = course.code
+        amount = len(course.course_events)
+        lectures_amount[code] = amount
+    return lectures_amount
+
+
+def order_course_events_by_priority():
+    """
+    Orders the course events by priority,
+    events with a higher priority should be scheduled first.
+    :return:
+    """
+    courses = processInput.courses_dict.values()
+    course_ranking = {}
+
+    for course in courses:
+        course_ranking[course.code] = []
+
+    lectures_amount = count_lectures_per_course(courses)
+
+    # fill the ranking array with all rankings in descending priority
+    for course in courses:
+        # highest priority
+        # we invert the solution, because the lowest value has the highest priority
+        # and we want to order from biggest priority value to smallest
+        course_ranking[course.code].append(1/get_events_ranking1(course, lectures_amount[course.code]))
+        course_ranking[course.code].append(1 / get_events_ranking2(course, courses))
