@@ -89,8 +89,8 @@ def compute_amount_of_available_time_slots(course):
     :return: the total number of available time slots for the given course
     """
     amount = 0
-    for i in range(processInput.number_of_times_lots):
-        for room in processInput.classrooms_dict.values():
+    for i in range(processInput.number_of_time_slots):
+        for room in processInput.class_rooms_dict.values():
             if hardConstraints.course_fits_in_to_time_slot(course, i, room):
                 amount += 1
     return amount
@@ -153,26 +153,26 @@ def get_events_ranking2(course, courses):
     return rank
 
 
-def count_lectures_per_course(courses_dict):
+def count_lectures_per_course(courses):
     """
     Get the amount of lectures per course.
-    :return: a dictionary with the course_id as key, and the amount of courses as value.
+    :param: a list of courses
+    :return: a dictionary containing the amount of course events per course
     """
     lectures_amount = {}
-    for course in courses_dict.values():
+    for course in courses:
         code = course.code
         amount = len(course.course_events)
         lectures_amount[code] = amount
     return lectures_amount
 
 
-def order_course_events_by_priority():
+def order_course_events_by_priority(courses):
     """
     Orders the course events by priority,
     events with a higher priority should be scheduled first.
     :return:
     """
-    courses = processInput.courses_dict.values()
     course_ranking = {}
 
     for course in courses:
@@ -185,5 +185,21 @@ def order_course_events_by_priority():
         # highest priority
         # we invert the solution, because the lowest value has the highest priority
         # and we want to order from biggest priority value to smallest
-        course_ranking[course.code].append(1/get_events_ranking1(course, lectures_amount[course.code]))
-        course_ranking[course.code].append(1 / get_events_ranking2(course, courses))
+        course_ranking[course.code].append(1/get_events_ranking1(course, lectures_amount[course.code])
+                                           if get_events_ranking1(course, lectures_amount[course.code]) != 0
+                                           else 0)
+        course_ranking[course.code].append(get_events_ranking2(course, courses))
+
+    courses_sorted = list(courses)
+    courses_sorted.sort(key=lambda cr: course_ranking[cr.code])
+    for c in courses_sorted:
+        print(c.code)
+
+    print(course_ranking['B001352A'])
+    print(course_ranking['H002121A'])
+    print(course_ranking['H001719A'])
+    print(course_ranking['I001035A'])
+    print(course_ranking['C003119A'])
+
+
+order_course_events_by_priority(processInput.courses_dict.values())
