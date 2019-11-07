@@ -9,7 +9,6 @@
 
 """
 import processInput
-from haversine import haversine
 
 
 def return_not_home_penalty(position, course_event):
@@ -40,7 +39,7 @@ def return_not_home_penalty(position, course_event):
         y_coord_home_of_curriculum = home_of_curriculum.y_coord
         position_home = (x_coord_home_of_curriculum, y_coord_home_of_curriculum)
 
-        distance = haversine(position_class, position_home)
-        total_penalty += distance * processInput.kilometer_penalty
+        #distance = haversine(position_class, position_home)
+        #total_penalty += distance * processInput.kilometer_penalty
 
     return total_penalty
