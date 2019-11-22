@@ -1,3 +1,6 @@
+import math
+
+
 class GeneralInfo:
     def __init__(self, academy_year, semester, kilometer_penalty,
                  late_hours_penalty, not_home_penalty, min_amount_students):
@@ -22,13 +25,13 @@ class Course:
     def __init__(self, code, name, student_amount, contact_hours, lecturers, curricula):
         self.code = code
         self.name = name
-        self.student_amount = student_amount
+        self.student_amount = int(student_amount)
         self.contact_hours = contact_hours
-        self.real_hours = contact_hours*0.8
+        self.course_hours = math.floor(contact_hours*0.8 / 12)
         self.lecturers = lecturers
         self.curricula = curricula
         self.course_events = []
-        for i in range(int(self.real_hours)):
+        for i in range(int(self.course_hours)):
             course_event = CourseEvent(course_code=code,
                                        lecturers=lecturers,
                                        event_number=i)
@@ -62,7 +65,7 @@ class ClassRoom:
     def __init__(self, fi_number, name, capacity, site_id):
         self.fi_number = fi_number
         self.name = name
-        self.capacity = capacity
+        self.capacity = int(capacity)
         self.site_id = site_id
 
 
