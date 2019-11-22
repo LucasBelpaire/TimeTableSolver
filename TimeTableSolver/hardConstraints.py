@@ -54,9 +54,6 @@ def timeslot_already_has_this_curriculum(course, timeslot):
 # Hard Constraint: we can't exceed the room capacity 
 def room_capacity_constraint(course, room):
     if course.student_amount <= room.capacity:
-        difference = room.capacity - course.student_amount
-        if difference > room.capacity/2:
-            return False
         return True
     return False
 

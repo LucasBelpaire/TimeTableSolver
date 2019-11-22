@@ -15,19 +15,32 @@ def construct_time_table():
     start_construct = time.clock()
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
-    while (len(processInput.events) > 0 or len(processInput.unplaced_events) > 0) and time.clock()-start_construct < 90:
+    while time.clock()-start_construct < 10000:
 
-      sorted_courses = order_course_events_by_priority(processInput.courses_dict.values())
+      courses_to_schedule = []
+      for course in processInput.courses_dict.values():
+          if course.course_hours > 0:
+              courses_to_schedule.append(course)
+
+
+      sorted_courses = order_course_events_by_priority(courses_to_schedule)
+
       for index, course in enumerate(sorted_courses):
             available_positions = []
+
             for room, time_slot in processInput.empty_positions:
                 fits = hardConstraints.course_fits_in_to_time_slot(course, time_slot) and hardConstraints.room_capacity_constraint(course, room)
                 if fits:
                     available_positions.append((room, time_slot))
 
+            print(len(available_positions))
             #sort available positions
             sorted_positions = order_positions_by_priority(available_positions, course)
             #TODO: nog nagaan of de lijst niet leeg is
+            if len(sorted_positions) == 0:
+                print("new unplaced course:" + course.code)
+                processInput.unplaced_events.append(course)
+                continue
             perfect_position = sorted_positions.pop()
             hardConstraints.assign_course_to_position(course, perfect_position)
 
@@ -50,7 +63,7 @@ def order_positions_by_priority(positions, course):
 
 
     sorted_positions = positions
-    sorted_positions.sort(key=lambda room, time_slot: positions_ranking[room.fi_number], reverse=False)
+    sorted_positions.sort(key=lambda tup: positions_ranking[tup[0].fi_number], reverse=False)
 
     return sorted_positions
 
@@ -177,4 +190,11 @@ def order_course_events_by_priority(courses):
 
 construct_time_table()
 #print(len(processInput.courses_dict))
-print(processInput.time_table)
+count = 0
+for key, value in processInput.time_table.items():
+    if value is not None:
+        print(key[0].fi_number, key[1], value.code)
+        count += 1
+
+print(count)
+print(len(processInput.unplaced_events))
