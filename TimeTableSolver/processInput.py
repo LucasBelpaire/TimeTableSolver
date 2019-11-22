@@ -93,6 +93,8 @@ for site in project_json['sites']:
                          x_coord=x_coord,
                          y_coord=y_coord,
                          class_rooms=class_rooms)
+    if new_site not in sites_dict:
+        sites_dict[new_site.code] = new_site
 
 
 
