@@ -54,6 +54,9 @@ def timeslot_already_has_this_curriculum(course, timeslot):
 # Hard Constraint: we can't exceed the room capacity 
 def room_capacity_constraint(course, room):
     if course.student_amount <= room.capacity:
+        difference = room.capacity - course.student_amount
+        if difference > room.capacity/2:
+            return False
         return True
     return False
 
@@ -72,11 +75,10 @@ def remove_event_at_position(position_of_event):
 
 # This function will assign a course to a position in the timetable
 # It won't return any value
-def assign_course_to_position(course_event, position):
+def assign_course_to_position(course, position):
 
-    # TODO: Waarom staat de lijn hieronder in commentaar bij de voorbeeld code???
-    # if data.timetable[position] is None and courseFitsIntoTimeslot(course, position[1]):
-    processInput.time_table[position] = course_event
+    processInput.time_table[position] = course
+    course.course_hours -= 1
     processInput.empty_positions.remove(position)
     processInput.forbidden_positions.append(position)
 

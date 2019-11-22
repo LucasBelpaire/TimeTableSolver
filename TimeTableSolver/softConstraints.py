@@ -11,7 +11,7 @@
 import processInput
 
 
-def return_not_home_penalty(position, course_event):
+def return_not_home_penalty(room, course):
     """
 
     :param position: the position in the time table
@@ -20,16 +20,19 @@ def return_not_home_penalty(position, course_event):
     """
     penalty = 0
 
-    room, time_slot = position
     class_room_site_id = room.site_id
     class_room_site = processInput.sites_dict[class_room_site_id]
 
-    current_course = processInput.courses_dict[course_event.course_code]
+    current_course = processInput.courses_dict[course.course_code]
     curricula_of_course = current_course.curricula
 
     # iterate over
     total_penalty = 0
     for curriculum in curricula_of_course:
+
+        if curriculum.home_site == room.site_id:
+            continue
+
         x_coord_class = class_room_site.x_coord
         y_coord_class = class_room_site.y_coord
         position_class = (x_coord_class, y_coord_class)
@@ -40,6 +43,6 @@ def return_not_home_penalty(position, course_event):
         position_home = (x_coord_home_of_curriculum, y_coord_home_of_curriculum)
 
         #distance = haversine(position_class, position_home)
-        #total_penalty += distance * processInput.kilometer_penalty
+        total_penalty += 5
 
     return total_penalty
