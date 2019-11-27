@@ -93,24 +93,3 @@ for site in project_json['sites']:
                          class_rooms=class_rooms)
     if new_site not in sites_dict:
         sites_dict[new_site.code] = new_site
-
-
-events = []
-for course in courses_dict.values():
-    events = events + course.course_events
-
-# all events that couldn't be placed in the construct phase
-unplaced_events = []
-
-# this list will contain all positions that already have been assigned to a event
-forbidden_positions = []
-
-number_of_time_slots = 40
-
-time_table = {}
-empty_positions = []
-for room in class_rooms_dict.values():
-    for time in range(number_of_time_slots):
-        room_fi_number = room.fi_number
-        empty_positions.append((room, time))
-        time_table[(room_fi_number, time)] = None
