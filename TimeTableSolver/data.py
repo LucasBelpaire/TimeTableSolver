@@ -31,11 +31,6 @@ class Course:
         self.lecturers = lecturers
         self.curricula = curricula
         self.course_events = []
-        for i in range(int(self.course_hours)):
-            course_event = CourseEvent(course_code=code,
-                                       lecturers=lecturers,
-                                       event_number=i)
-            self.course_events.append(course_event)
 
 
 class Lecturer:
@@ -43,6 +38,23 @@ class Lecturer:
         self.ugent_id = ugent_id
         self.first_name = first_name
         self.last_name = last_name
+        self.occupied_time_slots = []
+
+    def add_occupied_time_slot(self, time_slot_number):
+        if time_slot_number in self.occupied_time_slots:
+            return False
+        self.occupied_time_slots.append(time_slot_number)
+        return True
+
+    def remove_occupied_time_slot(self, time_slot_number):
+        try:
+            self.occupied_time_slots.remove(time_slot_number)
+            return True
+        except ValueError:
+            return False
+
+    def contains_time_slot(self, time_slot_number):
+        return time_slot_number in self.occupied_time_slots
 
 
 class Curriculum:
@@ -50,6 +62,23 @@ class Curriculum:
         self.code = code
         self.mt1 = mt1
         self.home_site = home_site
+        self.occupied_time_slots = []
+
+    def add_occupied_time_slot(self, time_slot_number):
+        if time_slot_number in self.occupied_time_slots:
+            return False
+        self.occupied_time_slots.append(time_slot_number)
+        return True
+
+    def remove_occupied_time_slot(self, time_slot_number):
+        try:
+            self.occupied_time_slots.remove(time_slot_number)
+            return True
+        except ValueError:
+            return False
+
+    def contains_time_slot(self, time_slot_number):
+        return time_slot_number in self.occupied_time_slots
 
 
 class Site:
@@ -70,7 +99,9 @@ class ClassRoom:
 
 
 class CourseEvent:
-    def __init__(self, course_code, lecturers, event_number):
+    def __init__(self, course_code, lecturers, student_amount, curricula, event_number):
         self.course_code = course_code
         self.lecturers = lecturers
+        self.student_amount = student_amount
+        self.curricula = curricula
         self.event_number = event_number
