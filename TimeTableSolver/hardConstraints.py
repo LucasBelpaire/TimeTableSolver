@@ -2,49 +2,61 @@ import data
 import processInput
 
 
-# This function will return True if there is no teacher available to give this eventCourse
-# otherwise it returns False
-# Hard Constraint: a teacher can only give one lesson at a time
-def time_slot_already_has_this_teacher(course, timeslot):
-    if course is None:
+def time_slot_already_has_this_teacher(course_event, time_slot):
+    '''
+    This function will check if the teacher is available on that specific time_slot
+    This function is needed to accomplish the hard constraint: a teacher can only teach one course at a time
+    :param course_event: this is the course that the teacher need to give
+    :param time_slot: the specific time_slot that we want to assign this course to
+    :return: we return True if the teacher isn't available, otherwise we return False, and than the
+        course_event can be scheduled at this specific time_slot
+    '''
+
+    #TODO: in het verslag schrijven: eerst gingen we alle rooms en time_slots overlopen, maar dit hebben we veranderd
+    #TODO: naar het bijhouden van een veld in het object lecturer die de tijden bijhudt waar deze lesgever al les geeft.
+
+    # if None was passed then we return False, because there was no teacher
+    if course_event is None:
         return False
 
-    occupied_lecturers = []
-    for room in processInput.class_rooms_dict.values():
-        room_fi_number = room.fi_number
-        if processInput.time_table[(room_fi_number, timeslot)] is not None:
-            existing_event = processInput.time_table[(room_fi_number, timeslot)]
-            course_lecturers = course.lecturers
-            event_lecturers = existing_event.lecturers
-            for lecturer in course_lecturers:
-                if lecturer in event_lecturers and lecturer not in occupied_lecturers:
-                    occupied_lecturers.append(lecturer)
-            if len(event_lecturers) == len(occupied_lecturers): #if the two array's are equal in length then there is no teacher available at this moment
-                return True
+    one_lecturer_free = False
 
-    return False
+    for lecturer in course_event.lecturers:
+        if not lecturer.contains_time_slot(time_slot):
+            one_lecturer_free = True
+            return one_lecturer_free
+
+    return one_lecturer_free
 
 
 def is_class_room_free(room, time_slot):
+    '''
+    This is a small function that will check if a room is already used or not in the time table
+    :param room: the first parameter is the room object
+    :param time_slot: the second parameter is the time_slot object
+    :return: we return true if the room is free at that specific time_slot else false
+    '''
     return processInput.time_table[(room.fi_number, time_slot)] is None
 
-# this function will return True if there is already a lecture of the same curriculum at this timeslot
-# Hard Constraint: Students can only follow one lecture at a time from one curriculum
-def timeslot_already_has_this_curriculum(course, timeslot):
 
-    if course is None:
+def time_slot_already_has_this_curriculum(course_event, time_slot):
+    '''
+    This function will check if any room already has a course were the students needs to be
+    this will handle the hard constraint: a student can only attend one course at a time from one curriculum
+    :param course_event: first parameter is the course_event, we use the curriculum of this course_event
+    :param time_slot: the time_slot to be used in the time table
+    :return: we return true if there is already a course form the same curriculum.
+    '''
+
+    #TODO: in het verslag schrijven: eerst gingen we alle rooms en time_slots overlopen, maar dit hebben we veranderd
+    #TODO: naar het bijhouden van een veld in het object curriculum die de tijden bijhoudt waar dit curriculum al gegeven wordt.
+    
+    if course_event is None:
         return False
 
-    current_event_curricula = processInput.courses_dict[course.code]
-    for room in processInput.class_rooms_dict.values():
-        room_fi_number = room.fi_number
-        if processInput.time_table[(room_fi_number, timeslot)] is not None:
-            existing_event = processInput.time_table[(room_fi_number, timeslot)]
-
-            for curricula in current_event_curricula:
-                # TODO: nog afwerken!!!
-
-                return False
+    for curriculum in course_event.curricula:
+        if curriculum.contains_time_slot(time_slot):
+            return True
 
     return False
 
@@ -83,7 +95,7 @@ def assign_course_to_position(course, position):
 # This is the main function of the hardconstraint class, it will check if the course fits in
 # the timeslot without breaking any hard constraints
 # this function returns True or False
-def course_fits_in_to_time_slot(course, time_slot):
+def course_event_fits_in_to_time_slot(course_event, time_slot):
     """
 
     :param course: The course we want to assign
@@ -91,5 +103,5 @@ def course_fits_in_to_time_slot(course, time_slot):
     :param room: the specific room we want to use
     :return: This returns true if the course can be assigned to a specific time_slot and room
     """
-    return not time_slot_already_has_this_teacher(course, time_slot) \
-           and not timeslot_already_has_this_curriculum(course, time_slot)
+    return not time_slot_already_has_this_teacher(course_event, time_slot) \
+           and not time_slot_already_has_this_curriculum(course_event, time_slot)
