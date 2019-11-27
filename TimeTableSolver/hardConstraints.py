@@ -88,17 +88,7 @@ def remove_event_at_position(position_of_event):
     return rem_event
 
 
-def assign_course_to_position(course_event, position):
-    '''
-    This function will assign a course_event to a specific position in the time table
-    :param course_event: the fist parameter is the course_event we want to schedule
-    :param position: the second is the specific place inside the time table
-    :return: we return true if successful otherwise false
-    '''
-    processInput.time_table[position] = course_event
-    course.course_hours -= 1
-    processInput.empty_positions.remove(position)
-    processInput.forbidden_positions.append(position)
+
 
 
 # This is the main function of the hardconstraint class, it will check if the course fits in

@@ -5,61 +5,24 @@ import random
 import processInput
 import softConstraints
 import math
-
-
-def initialize_time_table_variables():
-    """
-    This function initializes all variables that are needed to construct the time table.
-    The value of variables depend on the input that gets processed by the processInput script.
-    :return: events_type1, events_type2, time_table, empty_positions, courses_type_1, courses_type_2
-    """
-    events_type_1 = []  # All course events with courses that have more than or equal to 2 course hours per week
-    courses_type_1 = set() # All courses with more than 2 course hours per week
-    events_type_2 = []  # course events with courses that have less than 2 course hours per week
-    courses_type_2 = set()  # All courses with less than 2 course hours per week
-    for course in processInput.courses_dict.values():
-        course_events = []
-        for i in range(int(course.course_hours)):
-            course_event = data.CourseEvent(course_code=course.code,
-                                       lecturers=course.lecturers,
-                                       student_amount=course.student_amount,
-                                       curricula=course.curricula,
-                                       event_number=i)
-            course_events.append(course_event)
-        if len(course_events) >= 2:
-            events_type_1 += course_events
-            courses_type_1.add(course)
-            continue
-        events_type_2 += course_events
-        courses_type_2.add(course)
-
-    number_of_time_slots = 40  # amount of possible course hours per week
-    time_table = {}
-    empty_positions = []
-    for room in processInput.class_rooms_dict.values():
-        for time_slot in range(number_of_time_slots):
-            room_fi_number = room.fi_number
-            empty_positions.append((room, time_slot))
-            time_table[(room_fi_number, time_slot)] = None
-    return events_type_1, events_type_2, time_table, empty_positions, courses_type_1, courses_type_2
+import initTimeTable
 
 
 # This function will constructs a feasible solution or a partially feasible solution
 # it will also terminate when no solution is found in a specific time span
 def construct_time_table():
-    events_type1, events_type2, time_table, empty_positions, \
-                                courses_type_1, courses_type_2 = initialize_time_table_variables()
+
     unplaced_events = []  # all events that couldn't be placed in the construct phase
     forbidden_positions = []  # this list will contain all positions that already have been assigned to a event
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
     start_construct = time.clock()
     while time.clock() - start_construct < 10000:
-        sorted_events = order_course_events_by_priority(events_type1, courses_type_1)
+        sorted_events = order_course_events_by_priority(initTimeTable.events_type1, initTimeTable.courses_type_1)
         for index, course_event in enumerate(sorted_events):
             available_positions = []
 
-            for room, time_slot in empty_positions:
+            for room, time_slot in initTimeTable.empty_positions:
                 fits = hardConstraints.course_event_fits_in_to_time_slot(course_event, time_slot) \
                        and hardConstraints.room_capacity_constraint(course_event, room)
                 if fits:
@@ -215,6 +178,37 @@ def order_course_events_by_priority(course_events, courses):
     return courses_sorted
 
 
+
+def assign_course_to_position(course_event, position):
+    '''
+    This function will assign a course_event to a specific position in the time table
+    :param course_event: the fist parameter is the course_event we want to schedule
+    :param position: the second is the specific place inside the time table
+    :return: we return true if successful otherwise false
+    '''
+
+    initTimeTable.time_table[position] = course_event
+    course = processInput.courses_dict[course_event.course_code]
+    course.course_hours -= 1
+    initTimeTable.empty_positions.remove(position)
+
+
+def remove_course_from_position(course_event, position):
+    '''
+    This function will remove a course from the specific position
+    :param course_event: the course we want to remove
+    :param position: the position we want to clear out
+    :return: it will return True if the remove operation was successfully otherwise false
+    '''
+
+    if initTimeTable.time_table[position] == course_event:
+        initTimeTable.time_table[position] = None
+        course = processInput.courses_dict[course_event.course_code]
+        course.course_hours += 1
+        initTimeTable.empty_positions.append(position)
+        return True
+
+    return False
 
 construct_time_table()
 #print(len(processInput.courses_dict))
