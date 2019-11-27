@@ -31,12 +31,6 @@ class Course:
         self.lecturers = lecturers
         self.curricula = curricula
         self.course_events = []
-        for i in range(int(self.course_hours)):
-            course_event = CourseEvent(course_code=code,
-                                       lecturers=lecturers,
-                                       student_amount=student_amount,
-                                       event_number=i)
-            self.course_events.append(course_event)
 
 
 class Lecturer:
@@ -71,8 +65,9 @@ class ClassRoom:
 
 
 class CourseEvent:
-    def __init__(self, course_code, lecturers, student_amount, event_number):
+    def __init__(self, course_code, lecturers, student_amount, curricula, event_number):
         self.course_code = course_code
         self.lecturers = lecturers
         self.student_amount = student_amount
+        self.curricula = curricula
         self.event_number = event_number
