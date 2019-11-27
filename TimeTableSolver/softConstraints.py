@@ -9,7 +9,7 @@
 
 """
 import processInput
-
+from haversine import haversine
 
 def return_not_home_penalty(room, course):
     """
