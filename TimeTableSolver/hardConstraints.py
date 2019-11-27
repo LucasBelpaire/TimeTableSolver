@@ -22,8 +22,7 @@ def time_slot_already_has_this_teacher(course_event, time_slot):
     one_lecturer_free = False
 
     for lecturer in course_event.lecturers:
-        occupied_time_slots = lecturer.occupied_time_slots
-        if time_slot not in occupied_time_slots:
+        if not lecturer.contains_time_slot(time_slot):
             one_lecturer_free = True
             return one_lecturer_free
 
@@ -48,11 +47,16 @@ def time_slot_already_has_this_curriculum(course_event, time_slot):
     :param time_slot: the time_slot to be used in the time table
     :return: we return true if there is already a course form the same curriculum.
     '''
+
+    #TODO: in het verslag schrijven: eerst gingen we alle rooms en time_slots overlopen, maar dit hebben we veranderd
+    #TODO: naar het bijhouden van een veld in het object curriculum die de tijden bijhoudt waar dit curriculum al gegeven wordt.
     
     if course_event is None:
         return False
 
-
+    for curriculum in course_event.curricula:
+        if curriculum.contains_time_slot(time_slot):
+            return True
 
     return False
 
