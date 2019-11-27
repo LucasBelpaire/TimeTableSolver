@@ -23,13 +23,11 @@ curricula_dict = {}
 index = 0
 for course in project_json['vakken']:
     index += 1
-    if index > 20:
-        break
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
     contact_hours = course['contacturen']
-    if contact_hours > 75 or contact_hours is 0:
+    if contact_hours >= 75 or contact_hours is 0:
         continue
     lecturers = []
     for lecturer in course['lesgevers']:
@@ -63,6 +61,8 @@ for course in project_json['vakken']:
                              contact_hours=contact_hours,
                              lecturers=lecturers,
                              curricula=curricula)
+    if len(curricula) == 0:
+        continue
     courses_dict[code] = new_course
 
 # transform all sites into objects and save them into dictionary
