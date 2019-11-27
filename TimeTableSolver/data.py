@@ -38,6 +38,23 @@ class Lecturer:
         self.ugent_id = ugent_id
         self.first_name = first_name
         self.last_name = last_name
+        self.occupied_time_slots = []
+
+    def add_occupied_time_slot(self, time_slot_number):
+        if time_slot_number in self.occupied_time_slots:
+            return False
+        self.occupied_time_slots.append(time_slot_number)
+        return True
+
+    def remove_occupied_time_slot(self, time_slot_number):
+        try:
+            self.occupied_time_slots.remove(time_slot_number)
+            return True
+        except ValueError:
+            return False
+
+    def contains_time_slot(self, time_slot_number):
+        return time_slot_number in self.occupied_time_slots
 
 
 class Curriculum:
