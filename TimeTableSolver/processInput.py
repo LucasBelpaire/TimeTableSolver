@@ -23,6 +23,8 @@ curricula_dict = {}
 index = 0
 for course in project_json['vakken']:
     index += 1
+    if index > 20:
+        break
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])

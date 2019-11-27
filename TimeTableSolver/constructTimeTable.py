@@ -15,7 +15,7 @@ def construct_time_table():
     start_construct = time.clock()
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
-    while time.clock()-start_construct < 10000:
+    while time.clock()-start_construct < 10:
 
       courses_to_schedule = []
       for course in processInput.courses_dict.values():
@@ -24,6 +24,7 @@ def construct_time_table():
 
 
       sorted_courses = order_course_events_by_priority(courses_to_schedule)
+
 
       for index, course in enumerate(sorted_courses):
             available_positions = []
@@ -43,7 +44,6 @@ def construct_time_table():
                 continue
             perfect_position = sorted_positions.pop()
             hardConstraints.assign_course_to_position(course, perfect_position)
-
 
     return
 
@@ -187,8 +187,9 @@ def order_course_events_by_priority(courses):
     return courses_sorted
 
 
-
+start_time = time.clock()
 construct_time_table()
+print("tijd:"+ str (time.clock() - start_time))
 #print(len(processInput.courses_dict))
 count = 0
 for key, value in processInput.time_table.items():

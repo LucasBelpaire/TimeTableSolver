@@ -14,21 +14,19 @@ import processInput
 def return_not_home_penalty(room, course):
     """
 
-    :param position: the position in the time table
-    :param course_event: the course we want to schedule
+    :param room: the specific room we want to process
+    :param course: the course we want to schedule
     :return: This function returns the total sum of all distance penalties
     """
     penalty = 0
 
-    class_room_site_id = room.site_id
-    class_room_site = processInput.sites_dict[class_room_site_id]
+    class_room_site = processInput.sites_dict[room.site_id]
 
-    current_course = processInput.courses_dict[course.code]
-    curricula_of_course = current_course.curricula
+    curricula_of_courses = course.curricula
 
     # iterate over
     total_penalty = 0
-    for curriculum in curricula_of_course:
+    for curriculum in curricula_of_courses:
 
         if curriculum.home_site == room.site_id:
             continue
