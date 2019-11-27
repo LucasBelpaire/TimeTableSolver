@@ -15,72 +15,64 @@ def construct_time_table():
     start_construct = time.clock()
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
-    while (len(processInput.events) > 0 or len(processInput.unplaced_events) > 0) and time.clock()-start_construct < 90:
+    while time.clock()-start_construct < 10000:
 
-        # Construct a time table with the remaining events
-        events_size = len(processInput.events)
-        for index in range(events_size):
-            # get an event from the list and look if we can place it on a position
-            current_event = processInput.events.pop()
-            all_av_positions = order_positions_by_priority(current_event)
-            # if this list of positions is empty, than we didn't find a place to put this event
-            # so now we change this event from unassigned to unplaced
-            if not all_av_positions:
-                processInput.unplaced_events.append(current_event)
-            else:
-                hardConstraints.assign_course_to_position(current_event, all_av_positions[0])
+      courses_to_schedule = []
+      for course in processInput.courses_dict.values():
+          if course.course_hours > 0:
+              courses_to_schedule.append(course)
 
-        unplaced_events_size = len(processInput.unplaced_events)
 
-        new_positions = []
-        
-        # The following lines of code will remove some random events that are already placed in the timetable
-        # all the unplaced_events couldn't be assinged to any open position in the timetable
-        # so it is necessary to create new open positions by randomly removing events.
-        for index in range(unplaced_events_size):
-            random_position = random.choice(processInput.forbidden_positions)
-            current_random_event = hardConstraints.remove_event_at_position(random_position)
-            processInput.forbidden_positions.remove(random_position)
-            processInput.events.append(current_random_event)
-            new_positions.append(random_position)
+      sorted_courses = order_course_events_by_priority(courses_to_schedule)
 
-        # The next for loop will try to assign some unplaced events in the free timeslot in the timetable
-        for index in range(unplaced_events_size):
-            current_unplaced_event = processInput.unplaced_events.pop()
-            is_assigned = False
-            for pos in new_positions:
-                if hardConstraints.course_fits_in_to_time_slot(current_unplaced_event, pos[1]):
-                    hardConstraints.assign_course_to_position(current_unplaced_event, pos)
-                    new_positions.remove(pos)
-                    is_assigned = True
-                    break
-            if not is_assigned:
-                processInput.events.append(current_unplaced_event)
+      for index, course in enumerate(sorted_courses):
+            available_positions = []
 
-    return len(processInput.events)
+            for room, time_slot in processInput.empty_positions:
+                fits = hardConstraints.course_fits_in_to_time_slot(course, time_slot) and hardConstraints.room_capacity_constraint(course, room)
+                if fits:
+                    available_positions.append((room, time_slot))
+
+            print(len(available_positions))
+            #sort available positions
+            sorted_positions = order_positions_by_priority(available_positions, course)
+            #TODO: nog nagaan of de lijst niet leeg is
+            if len(sorted_positions) == 0:
+                print("new unplaced course:" + course.code)
+                processInput.unplaced_events.append(course)
+                continue
+            perfect_position = sorted_positions.pop()
+            hardConstraints.assign_course_to_position(course, perfect_position)
+
+
+    return
 
 
 # This function returns a list of all positions in the timetable that this event can be placed.
-def order_positions_by_priority(event):
-    # !!!!! pagina 34 voor pseudo code !!!!!
+def order_positions_by_priority(positions, course):
+    positions_ranking = {}
 
-    # Hard_pos is a list that contains positions that don't violate the hard constraints
-    hard_pos = []
+    for room, time_slot in positions:
+        positions_ranking[room.fi_number] = []
 
-    # feasible_pos is a list with positions with penalties from the soft constraints
-    feasible_pos = []
+    for room, time_slot in positions:
+        rank1 = get_positions_ranking1(room, course)
+        positions_ranking[room.fi_number].append(rank1)
+        rank2 = get_positions_ranking2(room, course)
+        positions_ranking[room.fi_number].append(rank2)
 
-    # TODO: hoe hervormen we deze functie?
-    for position in processInput.empty_positions:
-        if softConstraints.does_course_fits_in_position(event, position):
-            # TODO:afwerken
-            return False
-        elif hardConstraints.course_fits_in_to_time_slot(event, position[1]):
-            # TODO:afwerken
-            return False
 
-    all_possible_pos = hard_pos + feasible_pos
-    return all_possible_pos
+    sorted_positions = positions
+    sorted_positions.sort(key=lambda tup: positions_ranking[tup[0].fi_number], reverse=False)
+
+    return sorted_positions
+
+def get_positions_ranking2(room, course):
+    return softConstraints.return_not_home_penalty(room, course)
+
+
+def get_positions_ranking1(room, course):
+    return room.capacity - course.student_amount
 
 
 def compute_amount_of_available_time_slots(course):
@@ -190,8 +182,19 @@ def order_course_events_by_priority(courses):
                                            else 0)
         course_ranking[course.code].append(get_events_ranking2(course, courses))
 
-    courses_sorted = courses
+    courses_sorted = list(courses)
     courses_sorted.sort(key=lambda cr: course_ranking[cr.code], reverse=True)
     return courses_sorted
 
 
+
+construct_time_table()
+#print(len(processInput.courses_dict))
+count = 0
+for key, value in processInput.time_table.items():
+    if value is not None:
+        print(key[0].fi_number, key[1], value.code)
+        count += 1
+
+print(count)
+print(len(processInput.unplaced_events))
