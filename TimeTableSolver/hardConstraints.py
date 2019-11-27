@@ -61,19 +61,24 @@ def time_slot_already_has_this_curriculum(course_event, time_slot):
     return False
 
 
-# This functions check if the room has enough space for the total amount of students
-# it returns True if there is enough space, otherwise False
-# Hard Constraint: we can't exceed the room capacity 
-def room_capacity_constraint(course, room):
-    if course.student_amount <= room.capacity:
+def room_capacity_constraint(course_event, room):
+    '''
+    This fucntion will check if there is enough room for the amount of students that needs to be scheduled
+    :param course_event: this is the current course that needs to be scheduled
+    :param room: the room we want to check
+    :return: we return True if there are enough seats for the students
+    '''
+    if course_event.student_amount <= room.capacity:
         return True
     return False
 
 
-# This function will remove an already assigned course to a time slot
-# and will add it to the list of unplaced events
-# It will return the remove event
 def remove_event_at_position(position_of_event):
+    '''
+    This function will remove a specific position from the time table
+    :param position_of_event: this is the parameter containing the position we want to remove
+    :return: we return the course_event that was removed
+    '''
 
     rem_event = processInput.time_table[position_of_event]
     if rem_event is not None:
@@ -82,14 +87,8 @@ def remove_event_at_position(position_of_event):
 
     return rem_event
 
-# This function will assign a course to a position in the timetable
-# It won't return any value
-def assign_course_to_position(course, position):
 
-    processInput.time_table[position] = course
-    course.course_hours -= 1
-    processInput.empty_positions.remove(position)
-    processInput.forbidden_positions.append(position)
+
 
 
 # This is the main function of the hardconstraint class, it will check if the course fits in
