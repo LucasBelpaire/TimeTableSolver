@@ -41,7 +41,7 @@ def construct_time_table():
                 print("new unplaced course:" + course_event.course_code)
                 unplaced_events.append(course_event)
                 continue
-            perfect_position = sorted_positions.pop()
+            perfect_position = sorted_positions.pop(0)
             assign_course_to_position(course_event, perfect_position)
 
     return unplaced_events
@@ -221,9 +221,16 @@ def remove_course_from_position(course_event, position):
 unplaced_events = construct_time_table()
 #print(len(processInput.courses_dict))
 count = 0
+
 for key, value in initTimeTable.time_table.items():
     if value is not None:
         print(key[0].fi_number, key[1], value.course_code)
+        home_site_ok = 0
+        for curriculum in value.curricula:
+            if curriculum.home_site == processInput.class_rooms_dict[key[0].fi_number].site_id:
+                home_site_ok += 1
+
+        print("homeSite:" + str(home_site_ok))
         count += 1
 
 print(count)
