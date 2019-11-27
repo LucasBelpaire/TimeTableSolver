@@ -25,7 +25,7 @@ for course in project_json['vakken']:
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
     contact_hours = course['contacturen']
-    if contact_hours is 0:
+    if contact_hours > 75 or contact_hours is 0:
         continue
     lecturers = []
     for lecturer in course['lesgevers']:
@@ -91,7 +91,6 @@ for site in project_json['sites']:
                          class_rooms=class_rooms)
     if new_site not in sites_dict:
         sites_dict[new_site.code] = new_site
-
 
 
 events = []
