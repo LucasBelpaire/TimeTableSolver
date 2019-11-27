@@ -11,7 +11,7 @@
 import processInput
 
 
-def return_not_home_penalty(room, course):
+def return_not_home_penalty(room, course_event):
     """
 
     :param room: the specific room we want to process
@@ -22,7 +22,7 @@ def return_not_home_penalty(room, course):
 
     class_room_site = processInput.sites_dict[room.site_id]
 
-    curricula_of_courses = course.curricula
+    curricula_of_courses = course_event.curricula
 
     # iterate over
     total_penalty = 0
