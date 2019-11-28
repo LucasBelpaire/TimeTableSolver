@@ -69,6 +69,7 @@ for course in project_json['vakken']:
 # do the same for classrooms
 sites_dict = {}
 class_rooms_dict = {}
+biggest_room_capacity = 0
 for site in project_json['sites']:
     code = site['code']
     name = site['naam']
@@ -80,6 +81,8 @@ for site in project_json['sites']:
         if fi_number not in class_rooms_dict:
             classroom_name = classroom['naam']
             capacity = classroom['capaciteit']
+            if int(capacity) > biggest_room_capacity:
+                biggest_room_capacity = int(capacity)
             new_classroom = data.ClassRoom(fi_number=fi_number,
                                            name=classroom_name,
                                            capacity=capacity,

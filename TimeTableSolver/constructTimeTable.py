@@ -31,15 +31,18 @@ def construct_time_table():
                     available_positions.append((room, time_slot))
 
 
-            print(course_event.course_code)
-            print(processInput.courses_dict[course_event.course_code].course_hours)
+            # printing some info of the current course_event
+            #print(course_event.course_code)
+            #print(processInput.courses_dict[course_event.course_code].course_hours)
             # sort available positions
             sorted_positions = order_positions_by_priority(available_positions, course_event)
 
-            # TODO: nog nagaan of de lijst niet leeg is
             if len(sorted_positions) == 0:
                 print("new unplaced course:" + course_event.course_code)
                 unplaced_events.append(course_event)
+                if int(course_event.student_amount) > processInput.biggest_room_capacity:
+                    print("To many students, no room large enough")
+                    #TODO: dit event opsplitsen in twee
                 continue
             perfect_position = sorted_positions.pop(0)
             assign_course_to_position(course_event, perfect_position)
@@ -235,3 +238,6 @@ for key, value in initTimeTable.time_table.items():
 
 print(count)
 print(len(unplaced_events))
+for event in unplaced_events:
+    course = processInput.courses_dict[event.course_code]
+    print(str(course.code) + ", " + str(course.student_amount))
