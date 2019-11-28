@@ -101,8 +101,8 @@ for site in project_json['sites']:
 
 generalInfo = data.GeneralInfo(academy_year=academy_year,
                                semester=semester,
-                               kilometer_penalty=kilometer_penalty,
-                               late_hours_penalty=late_hours_penalty,
-                               not_home_penalty=not_home_penalty,
-                               min_amount_students=min_amount_student,
-                               biggest_room_capacity=biggest_room_capacity)
+                               kilometer_penalty=float(kilometer_penalty),
+                               late_hours_penalty=float(late_hours_penalty),
+                               not_home_penalty=float(not_home_penalty),
+                               min_amount_students=float(min_amount_student),
+                               biggest_room_capacity=float(biggest_room_capacity))
