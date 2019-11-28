@@ -3,21 +3,15 @@ import math
 
 class GeneralInfo:
     def __init__(self, academy_year, semester, kilometer_penalty,
-                 late_hours_penalty, not_home_penalty, min_amount_students):
+                 late_hours_penalty, not_home_penalty, min_amount_students, biggest_room_capacity):
         self.academy_year = academy_year
         self.semester = semester
         self.kilometer_penalty = kilometer_penalty
         self.late_hour_penalty = late_hours_penalty
         self.not_home_penalty = not_home_penalty
         self.min_amount_students = min_amount_students
-        self.course_hours = {1: "08u30-10u00",
-                             2: "10u00-11u30",
-                             3: "11u30-13u00",
-                             4: "13u00-14u30",
-                             5: "14u30-16u00",
-                             6: "16u00-17u30",
-                             7: "17u30-19u00",
-                             8: "19u00-20u30"}
+        self.biggest_room_capacity = biggest_room_capacity
+        self.total_course_hours = 40
         self.weeks = 13
 
 
