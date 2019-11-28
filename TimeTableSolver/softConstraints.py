@@ -41,6 +41,7 @@ def return_not_home_penalty(room, course_event):
         position_home = (x_coord_home_of_curriculum, y_coord_home_of_curriculum)
 
         distance = haversine(position_class, position_home)
-        total_penalty += distance
+
+        total_penalty += processInput.generalInfo.kilometer_penalty * distance
 
     return total_penalty

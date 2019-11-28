@@ -24,8 +24,9 @@ for course in project_json['vakken']:
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
+
     contact_hours = course['contacturen']
-    if contact_hours >= 75 or contact_hours is 0:
+    if contact_hours >= 75 or contact_hours is 0 or student_amounts < int(min_amount_student):
         continue
     lecturers = []
     for lecturer in course['lesgevers']:
