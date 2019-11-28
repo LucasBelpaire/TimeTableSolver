@@ -1,5 +1,5 @@
 import time
-import data  # TODO: nog veranderen naar de jusite klasse, waar zit de lijst van alle events?
+import data
 import hardConstraints
 import random
 import processInput
@@ -17,8 +17,10 @@ def construct_time_table():
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
     start_construct = time.clock()
-    while time.clock() - start_construct < 10000:
-        sorted_events = order_course_events_by_priority(initTimeTable.events_type1, initTimeTable.courses_type_1)
+
+    while time.clock() - start_construct < 10:
+
+        sorted_events = order_course_events_by_priority(initTimeTable.events_type_1, initTimeTable.courses_type_1)
         for index, course_event in enumerate(sorted_events):
             available_positions = []
 
@@ -27,17 +29,25 @@ def construct_time_table():
                        and hardConstraints.room_capacity_constraint(course_event, room)
                 if fits:
                     available_positions.append((room, time_slot))
-            print(len(available_positions))
+
+
+            # printing some info of the current course_event
+            #print(course_event.course_code)
+            #print(processInput.courses_dict[course_event.course_code].course_hours)
             # sort available positions
             sorted_positions = order_positions_by_priority(available_positions, course_event)
-            # TODO: nog nagaan of de lijst niet leeg is
+
             if len(sorted_positions) == 0:
-                print("new unplaced course:" + course_event.code)
+                print("new unplaced course:" + course_event.course_code)
                 unplaced_events.append(course_event)
+                if int(course_event.student_amount) > processInput.biggest_room_capacity:
+                    print("To many students, no room large enough")
+                    #TODO: dit event opsplitsen in twee
                 continue
-            perfect_position = sorted_positions.pop()
+            perfect_position = sorted_positions.pop(0)
             assign_course_to_position(course_event, perfect_position)
 
+    return unplaced_events
 
 # This function returns a list of all positions in the timetable that this event can be placed.
 def order_positions_by_priority(positions, course_event):
@@ -58,11 +68,11 @@ def order_positions_by_priority(positions, course_event):
     return sorted_positions
 
 
-def get_positions_ranking2(room, course_event):
+def get_positions_ranking1(room, course_event):
     return softConstraints.return_not_home_penalty(room, course_event)
 
 
-def get_positions_ranking1(room, course_event):
+def get_positions_ranking2(room, course_event):
     return room.capacity - course_event.student_amount
 
 
@@ -144,7 +154,7 @@ def count_lectures_per_course(course_events):
     lectures_amount = {}
     for course_event in course_events:
         code = course_event.course_code
-        amount = len(processInput.courses_dict[code].course_events)
+        amount = processInput.courses_dict[code].course_hours
         lectures_amount[code] = amount
     return lectures_amount
 
@@ -158,7 +168,7 @@ def order_course_events_by_priority(course_events, courses):
     course_events_ranking = {}
 
     for event in course_events:
-        course_events_ranking[event.code] = []
+        course_events_ranking[event.course_code] = []
 
     lectures_amount = count_lectures_per_course(course_events)
 
@@ -173,8 +183,8 @@ def order_course_events_by_priority(course_events, courses):
                                            else 0)
         course_events_ranking[course_event.course_code].append(get_events_ranking2(course_event, list(courses)))
 
-    courses_sorted = list(courses)
-    courses_sorted.sort(key=lambda cr: course_events_ranking[cr.code], reverse=True)
+    courses_sorted = list(course_events)
+    courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
     return courses_sorted
 
 
@@ -190,6 +200,7 @@ def assign_course_to_position(course_event, position):
     initTimeTable.time_table[position] = course_event
     course = processInput.courses_dict[course_event.course_code]
     course.course_hours -= 1
+    initTimeTable.events_type_1.remove(course_event)
     initTimeTable.empty_positions.remove(position)
 
 
@@ -210,13 +221,23 @@ def remove_course_from_position(course_event, position):
 
     return False
 
-construct_time_table()
+unplaced_events = construct_time_table()
 #print(len(processInput.courses_dict))
 count = 0
-for key, value in processInput.time_table.items():
+
+for key, value in initTimeTable.time_table.items():
     if value is not None:
-        print(key[0].fi_number, key[1], value.code)
+        print(key[0].fi_number, key[1], value.course_code)
+        home_site_ok = 0
+        for curriculum in value.curricula:
+            if curriculum.home_site == processInput.class_rooms_dict[key[0].fi_number].site_id:
+                home_site_ok += 1
+
+        print("homeSite:" + str(home_site_ok))
         count += 1
 
 print(count)
-print(len(processInput.unplaced_events))
+print(len(unplaced_events))
+for event in unplaced_events:
+    course = processInput.courses_dict[event.course_code]
+    print(str(course.code) + ", " + str(course.student_amount))

@@ -17,16 +17,13 @@ def time_slot_already_has_this_teacher(course_event, time_slot):
 
     # if None was passed then we return False, because there was no teacher
     if course_event is None:
-        return False
-
-    one_lecturer_free = False
+        return True
 
     for lecturer in course_event.lecturers:
         if not lecturer.contains_time_slot(time_slot):
-            one_lecturer_free = True
-            return one_lecturer_free
+            return False
 
-    return one_lecturer_free
+    return True
 
 
 def is_class_room_free(room, time_slot):
@@ -55,10 +52,10 @@ def time_slot_already_has_this_curriculum(course_event, time_slot):
         return False
 
     for curriculum in course_event.curricula:
-        if curriculum.contains_time_slot(time_slot):
-            return True
+        if not curriculum.contains_time_slot(time_slot):
+            return False
 
-    return False
+    return True
 
 
 def room_capacity_constraint(course_event, room):

@@ -23,13 +23,11 @@ curricula_dict = {}
 index = 0
 for course in project_json['vakken']:
     index += 1
-    if index > 20:
-        break
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
     contact_hours = course['contacturen']
-    if contact_hours > 75 or contact_hours is 0:
+    if contact_hours >= 75 or contact_hours is 0:
         continue
     lecturers = []
     for lecturer in course['lesgevers']:
@@ -63,12 +61,15 @@ for course in project_json['vakken']:
                              contact_hours=contact_hours,
                              lecturers=lecturers,
                              curricula=curricula)
+    if len(curricula) == 0:
+        continue
     courses_dict[code] = new_course
 
 # transform all sites into objects and save them into dictionary
 # do the same for classrooms
 sites_dict = {}
 class_rooms_dict = {}
+biggest_room_capacity = 0
 for site in project_json['sites']:
     code = site['code']
     name = site['naam']
@@ -80,6 +81,8 @@ for site in project_json['sites']:
         if fi_number not in class_rooms_dict:
             classroom_name = classroom['naam']
             capacity = classroom['capaciteit']
+            if int(capacity) > biggest_room_capacity:
+                biggest_room_capacity = int(capacity)
             new_classroom = data.ClassRoom(fi_number=fi_number,
                                            name=classroom_name,
                                            capacity=capacity,
