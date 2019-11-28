@@ -20,9 +20,7 @@ min_amount_student = project_json['minimaalStudentenaantal']
 courses_dict = {}
 lecturers_dict = {}
 curricula_dict = {}
-index = 0
 for course in project_json['vakken']:
-    index += 1
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
@@ -105,4 +103,5 @@ generalInfo = data.GeneralInfo(academy_year=academy_year,
                                kilometer_penalty=kilometer_penalty,
                                late_hours_penalty=late_hours_penalty,
                                not_home_penalty=not_home_penalty,
-                               min_amount_students=min_amount_student)
+                               min_amount_students=min_amount_student,
+                               biggest_room_capacity=biggest_room_capacity)
