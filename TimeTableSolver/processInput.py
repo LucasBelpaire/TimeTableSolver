@@ -15,12 +15,6 @@ kilometer_penalty = project_json['kilometerpenalty']
 late_hours_penalty = project_json['lateurenkost']
 min_amount_student = project_json['minimaalStudentenaantal']
 
-generalInfo = data.GeneralInfo(academy_year=academy_year,
-                               semester=semester,
-                               kilometer_penalty=kilometer_penalty,
-                               late_hours_penalty=late_hours_penalty,
-                               min_amount_students=min_amount_student)
-
 # transform all courses into course objects and save them into a dictionary
 # do the same for the lecturers and curricula
 courses_dict = {}
@@ -101,3 +95,11 @@ for site in project_json['sites']:
                          class_rooms=class_rooms)
     if new_site not in sites_dict:
         sites_dict[new_site.code] = new_site
+
+
+generalInfo = data.GeneralInfo(academy_year=academy_year,
+                               semester=semester,
+                               kilometer_penalty=kilometer_penalty,
+                               late_hours_penalty=late_hours_penalty,
+                               not_home_penalty=not_home_penalty,
+                               min_amount_students=min_amount_student)
