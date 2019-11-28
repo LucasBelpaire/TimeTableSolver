@@ -105,3 +105,20 @@ class CourseEvent:
         self.student_amount = student_amount
         self.curricula = curricula
         self.event_number = event_number
+        self.assigned_lecturer = None
+
+    def set_assigned_lecturer(self, lecturer):
+        if self.assigned_lecturer == None:
+            self.assigned_lecturer = lecturer
+            return True
+        return False
+
+    def remove_assigned_lecturer(self):
+        try:
+            self.assigned_lecturer = None
+            return True
+        except ValueError:
+            return False
+
+    def contains_assigned_lecturer(self):
+        return self.assigned_lecturer != None

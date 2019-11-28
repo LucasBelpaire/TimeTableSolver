@@ -43,6 +43,8 @@ def construct_time_table():
                 if int(course_event.student_amount) > processInput.biggest_room_capacity:
                     print("To many students, no room large enough")
                     #TODO: dit event opsplitsen in twee
+                else:
+                    print("Hard constraint violation")
                 continue
             perfect_position = sorted_positions.pop(0)
             assign_course_to_position(course_event, perfect_position)
@@ -199,6 +201,23 @@ def assign_course_to_position(course_event, position):
 
     initTimeTable.time_table[position] = course_event
     course = processInput.courses_dict[course_event.course_code]
+
+    for curriculum in course.curricula:
+        #adding the time_slot to the list of occupied time_slots
+        curriculum.add_occupied_time_slot(position[1])
+
+    assigned_lecturer_count_time_slots = 100000
+    assigned_lecturer = None
+    #the lecturer with the fewest time_slots will be assigned the course_event
+    for lecturer in course.lecturers:
+        #adding the time_slot to the list of occupied time_slots
+        if len(lecturer.occupied_time_slots) <= assigned_lecturer_count_time_slots:
+            assigned_lecturer = lecturer
+    #assing the the time_slot to the lecturer we picked above
+    assigned_lecturer.add_occupied_time_slot(position[1])
+    #for this course_event we assignt the above lecturer
+    course_event.set_assigned_lecturer(assigned_lecturer)
+
     course.course_hours -= 1
     initTimeTable.events_type_1.remove(course_event)
     initTimeTable.empty_positions.remove(position)
@@ -213,31 +232,21 @@ def remove_course_from_position(course_event, position):
     '''
 
     if initTimeTable.time_table[position] == course_event:
+        # this time_slot will be free again in the time table
         initTimeTable.time_table[position] = None
+        initTimeTable.empty_positions.append(position)
+
         course = processInput.courses_dict[course_event.course_code]
         course.course_hours += 1
-        initTimeTable.empty_positions.append(position)
+
+        # remove the time_slot from the occupied time_sot list from every curriculum
+        for curriculum in course.curricula:
+            curriculum.remove_occupied_time_slot(position[1])
+
+        assigned_lecturer = course_event.assigned_lecturer
+        assigned_lecturer.remove_occupied_time_slot(position[1])
+        course_event.remove_assigned_lecturer()
+
         return True
 
     return False
-
-unplaced_events = construct_time_table()
-#print(len(processInput.courses_dict))
-count = 0
-
-for key, value in initTimeTable.time_table.items():
-    if value is not None:
-        print(key[0].fi_number, key[1], value.course_code)
-        home_site_ok = 0
-        for curriculum in value.curricula:
-            if curriculum.home_site == processInput.class_rooms_dict[key[0].fi_number].site_id:
-                home_site_ok += 1
-
-        print("homeSite:" + str(home_site_ok))
-        count += 1
-
-print(count)
-print(len(unplaced_events))
-for event in unplaced_events:
-    course = processInput.courses_dict[event.course_code]
-    print(str(course.code) + ", " + str(course.student_amount))
