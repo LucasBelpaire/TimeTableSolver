@@ -3,6 +3,7 @@ import processInput
 import json
 import math
 
+
 def generate_output_from_time_table():
     """
     This function will convert the end solution time table to a correct json file
@@ -22,8 +23,7 @@ def generate_output_from_time_table():
             course_id = course.code
 
             #we need the room id
-            room = position[0]
-            room_id = room.fi_number
+            room_fi_number = position[0]
 
             #we get the student amount for this reservation
             course_event_student_amount = course_event.student_amount
@@ -48,7 +48,7 @@ def generate_output_from_time_table():
             hours = [hour]
 
             # the final reservation we want to write to the JSON file
-            end_reservation = {"lokaal": room_id,
+            end_reservation = {"lokaal": room_fi_number,
                                "code": course_id,
                                "aantal": course_event_student_amount,
                                "dagen":days,

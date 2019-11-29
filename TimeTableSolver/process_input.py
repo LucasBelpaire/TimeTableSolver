@@ -136,11 +136,12 @@ for course in courses_dict.values():
 for room in class_rooms_dict.values():
     for time_slot in range(number_of_time_slots):
         room_fi_number = room.fi_number
-        empty_positions.append((room.fi_number, time_slot))
+        empty_positions.append((room_fi_number, time_slot))
         time_table[(room_fi_number, time_slot)] = None
 
 # TODO: this variable is for the testing phase only, needs to be changed
 events = events_type_1
+courses_set = courses_type_1
 
 
 def set_global_variables():
@@ -149,9 +150,10 @@ def set_global_variables():
     These values depend on the input processed in this module.
     """
     gv.events = copy.deepcopy(events)
+    gv.courses_set = courses_set
     gv.time_table = copy.deepcopy(time_table)
     gv.number_of_time_slots = copy.deepcopy(number_of_time_slots)
-    gv.empty_positions = copy.deepcopy(number_of_time_slots)
+    gv.empty_positions = copy.deepcopy(empty_positions)
     gv.generalInfo = copy.deepcopy(generalInfo)
     gv.courses_dict = copy.deepcopy(courses_dict)
     gv.lecturers_dict = copy.deepcopy(lecturers_dict)
