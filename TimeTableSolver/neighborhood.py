@@ -16,6 +16,17 @@ def get_random_time_slots():
     return time_slot_1, time_slot_2
 
 
+def get_random_positions():
+    """
+    :return: two different time table dictionary keys, (fi_number, time_slot)
+    """
+    position_1 = random.choice(list(initTimeTable.time_table))
+    position_2 = random.choice(list(initTimeTable.time_table))
+    while position_1 == position_2:
+        position_2 = random.choice(list(initTimeTable.time_table))
+    return position_1, position_2
+
+
 def swap_time_slots(time_slot_1, time_slot_2, feasibility=True):
     """
 
