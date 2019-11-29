@@ -1,5 +1,7 @@
 import json
 import data
+import copy
+import global_variables as gv
 
 path = "datasets/project.json"
 
@@ -7,6 +9,7 @@ path = "datasets/project.json"
 with open(path, 'r') as f:
     project_json = json.load(f)
 
+number_of_time_slots = 40
 # get general info out of the json file
 academy_year = project_json['academiejaar']
 semester = project_json['semester']
@@ -106,3 +109,53 @@ generalInfo = data.GeneralInfo(academy_year=academy_year,
                                not_home_penalty=float(not_home_penalty),
                                min_amount_students=float(min_amount_student),
                                biggest_room_capacity=float(biggest_room_capacity))
+
+# TODO: Generalize events_type_1 and events_type_2
+events_type_1 = []  # All course events with courses that have more than or equal to 2 course hours per week
+courses_type_1 = set()  # All courses with more than 2 course hours per week
+events_type_2 = []  # course events with courses that have less than 2 course hours per week
+courses_type_2 = set()  # All courses with less than 2 course hours per week
+empty_positions = []
+time_table = {}
+for course in courses_dict.values():
+    course_events = []
+    for i in range(int(course.course_hours)):
+        course_event = data.CourseEvent(course_code=course.code,
+                                        lecturers=course.lecturers,
+                                        student_amount=course.student_amount,
+                                        curricula=course.curricula,
+                                        event_number=i)
+        course_events.append(course_event)
+    if len(course_events) >= 2:
+        events_type_1 += course_events
+        courses_type_1.add(course)
+        continue
+    events_type_2 += course_events
+    courses_type_2.add(course)
+
+for room in class_rooms_dict.values():
+    for time_slot in range(number_of_time_slots):
+        room_fi_number = room.fi_number
+        empty_positions.append((room.fi_number, time_slot))
+        time_table[(room_fi_number, time_slot)] = None
+
+# TODO: this variable is for the testing phase only, needs to be changed
+events = events_type_1
+
+
+def set_global_variables():
+    """
+    this method will set the value of all variables in the globalVariables module.
+    These values depend on the input processed in this module.
+    """
+    gv.events = copy.deepcopy(events)
+    gv.time_table = copy.deepcopy(time_table)
+    gv.number_of_time_slots = copy.deepcopy(number_of_time_slots)
+    gv.empty_positions = copy.deepcopy(number_of_time_slots)
+    gv.generalInfo = copy.deepcopy(generalInfo)
+    gv.courses_dict = copy.deepcopy(courses_dict)
+    gv.lecturers_dict = copy.deepcopy(lecturers_dict)
+    gv.curricula_dict = copy.deepcopy(curricula_dict)
+    gv.sites_dict = copy.deepcopy(sites_dict)
+    gv.class_rooms_dict = copy.copy(class_rooms_dict)
+
