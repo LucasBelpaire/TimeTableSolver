@@ -1,7 +1,7 @@
-import random
 """
     This module holds all variables which the different parts of the program need.
 """
+import random
 
 # Variables:
 events = []  # events is a list of all course events

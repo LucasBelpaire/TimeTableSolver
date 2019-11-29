@@ -1,6 +1,6 @@
 import time
-import hardConstraints as hc
-import softConstraints as sc
+import hard_constraints as hc
+import soft_constraints as sc
 import math
 import global_variables as gv
 
@@ -23,7 +23,7 @@ def construct_time_table():
             available_positions = []
             for room_fi_number, time_slot in gv.empty_positions:
                 room = gv.class_rooms_dict[room_fi_number]
-                fits = hc.course_event_fits_in_to_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
+                fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
                     course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
@@ -85,7 +85,7 @@ def compute_amount_of_available_time_slots(course_event):
     """
     amount = 0
     for i in range(gv.number_of_time_slots):
-        if hc.course_event_fits_in_to_time_slot(course_event, i):
+        if hc.course_event_fits_into_time_slot(course_event, i):
             amount += 1
     return amount
 
