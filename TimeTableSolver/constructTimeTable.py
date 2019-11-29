@@ -223,15 +223,15 @@ def assign_course_to_position(course_event, position):
     initTimeTable.empty_positions.remove(position)
 
 
-def remove_course_from_position(course_event, position):
+def remove_course_from_position(position):
     '''
     This function will remove a course from the specific position
-    :param course_event: the course we want to remove
     :param position: the position we want to clear out
     :return: it will return True if the remove operation was successfully otherwise false
     '''
 
-    if initTimeTable.time_table[position] == course_event:
+    if initTimeTable.time_table[position] != None:
+        course_event = initTimeTable.time_table[position]
         # this time_slot will be free again in the time table
         initTimeTable.time_table[position] = None
         initTimeTable.empty_positions.append(position)
