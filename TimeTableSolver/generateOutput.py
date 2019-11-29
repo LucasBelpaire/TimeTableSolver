@@ -1,4 +1,4 @@
-import initTimeTable
+import global_variables
 import processInput
 import json
 import math
@@ -10,7 +10,7 @@ def generate_output_from_time_table():
     :return: we return true if successful
     """
 
-    end_time_table = initTimeTable.time_table
+    end_time_table = global_variables.time_table
 
     room_reservation_dict = []
 
@@ -57,5 +57,5 @@ def generate_output_from_time_table():
 
             room_reservation_dict.append(end_reservation)
 
-    with open('output.json', 'w') as json_file:
+    with open('output/output.json', 'w') as json_file:
         json.dump(room_reservation_dict, json_file)
