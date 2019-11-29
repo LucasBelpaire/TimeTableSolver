@@ -24,8 +24,9 @@ for course in project_json['vakken']:
     code = course['code']
     name = course['cursusnaam']
     student_amounts = int(course['studenten'])
+
     contact_hours = course['contacturen']
-    if contact_hours >= 75 or contact_hours is 0:
+    if contact_hours >= 75 or contact_hours is 0 or student_amounts < int(min_amount_student):
         continue
     lecturers = []
     for lecturer in course['lesgevers']:
@@ -100,8 +101,8 @@ for site in project_json['sites']:
 
 generalInfo = data.GeneralInfo(academy_year=academy_year,
                                semester=semester,
-                               kilometer_penalty=kilometer_penalty,
-                               late_hours_penalty=late_hours_penalty,
-                               not_home_penalty=not_home_penalty,
-                               min_amount_students=min_amount_student,
-                               biggest_room_capacity=biggest_room_capacity)
+                               kilometer_penalty=float(kilometer_penalty),
+                               late_hours_penalty=float(late_hours_penalty),
+                               not_home_penalty=float(not_home_penalty),
+                               min_amount_students=float(min_amount_student),
+                               biggest_room_capacity=float(biggest_room_capacity))
