@@ -1,16 +1,23 @@
-import constructTimeTable
-import initTimeTable
-import processInput
-import generateOutput
+import construct_time_table as ctt
+import process_input
+import generate_output as go
 
-unplaced_events = constructTimeTable.construct_time_table()
-#print(len(processInput.courses_dict))
-count = 0
 
-print(count)
-print(len(unplaced_events))
-for event in unplaced_events:
-    course = processInput.courses_dict[event.course_code]
-    print(str(course.code) + ", " + str(course.student_amount))
+def main():
+    # Initialize all variables needed to create a time table
+    print("Starting to process input.")
+    process_input.set_global_variables()
+    print("Processing input completed.")
 
-generateOutput.generate_output_from_time_table()
+    # Start the first phase of the construction process
+    print("Starting initial construction of timetable.")
+    ctt.construct_time_table()
+    print("Initial construction of timetable finished.")
+
+    print("Starting to generate output")
+    go.generate_output_from_time_table()
+    print("Generating output completed.")
+
+
+if __name__ == '__main__':
+    main()
