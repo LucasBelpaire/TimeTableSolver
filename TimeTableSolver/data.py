@@ -102,7 +102,7 @@ class CourseEvent:
         self.assigned_lecturer = None
 
     def set_assigned_lecturer(self, lecturer):
-        if self.assigned_lecturer == None:
+        if self.assigned_lecturer is None:
             self.assigned_lecturer = lecturer
             return True
         return False
@@ -113,6 +113,3 @@ class CourseEvent:
             return True
         except ValueError:
             return False
-
-    def contains_assigned_lecturer(self):
-        return self.assigned_lecturer != None

@@ -5,14 +5,14 @@ import random
 import processInput
 import softConstraints
 import math
-import initTimeTable
+import global_variables
 
 
 # This function will constructs a feasible solution or a partially feasible solution
 # it will also terminate when no solution is found in a specific time span
 def construct_time_table():
 
-    unplaced_events = []  # all events that couldn't be placed in the construct phase
+
     forbidden_positions = []  # this list will contain all positions that already have been assigned to a event
 
     # TODO: de tijd wordt nu hard gecodeerd, dit moet nog veranderen!!!!
@@ -20,11 +20,11 @@ def construct_time_table():
 
     while time.clock() - start_construct < 10:
 
-        sorted_events = order_course_events_by_priority(initTimeTable.events_type_1, initTimeTable.courses_type_1)
+        sorted_events = order_course_events_by_priority(global_variables.events_type_1, global_variables.courses_type_1)
         for index, course_event in enumerate(sorted_events):
             available_positions = []
 
-            for room, time_slot in initTimeTable.empty_positions:
+            for room, time_slot in global_variables.empty_positions:
                 fits = hardConstraints.course_event_fits_in_to_time_slot(course_event, time_slot) \
                        and hardConstraints.room_capacity_constraint(course_event, room)
                 if fits:
@@ -199,7 +199,7 @@ def assign_course_to_position(course_event, position):
     :return: we return true if successful otherwise false
     '''
 
-    initTimeTable.time_table[position] = course_event
+    global_variables.time_table[position] = course_event
     course = processInput.courses_dict[course_event.course_code]
 
     for curriculum in course.curricula:
@@ -219,8 +219,8 @@ def assign_course_to_position(course_event, position):
     course_event.set_assigned_lecturer(assigned_lecturer)
 
     course.course_hours -= 1
-    initTimeTable.events_type_1.remove(course_event)
-    initTimeTable.empty_positions.remove(position)
+    global_variables.events_type_1.remove(course_event)
+    global_variables.empty_positions.remove(position)
 
 
 def remove_course_from_position(position):
@@ -230,11 +230,11 @@ def remove_course_from_position(position):
     :return: it will return True if the remove operation was successfully otherwise false
     '''
 
-    if initTimeTable.time_table[position] != None:
-        course_event = initTimeTable.time_table[position]
+    if global_variables.time_table[position] != None:
+        course_event = global_variables.time_table[position]
         # this time_slot will be free again in the time table
-        initTimeTable.time_table[position] = None
-        initTimeTable.empty_positions.append(position)
+        global_variables.time_table[position] = None
+        global_variables.empty_positions.append(position)
 
         course = processInput.courses_dict[course_event.course_code]
         course.course_hours += 1
