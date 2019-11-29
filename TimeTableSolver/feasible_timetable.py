@@ -1,23 +1,23 @@
 import neighborhood
-import initTimeTable
-import hardConstraints
-import constructTimeTable
+import global_variables
+import hard_constraints
+import construct_time_table
 import time
 import random
 import copy
 
-best_distance = len(initTimeTable.events_type_1)
+best_distance = len(global_variables.events_type_1)
 last_distance = best_distance
-best_feasible_tt = copy.deepcopy(initTimeTable.time_table)
+best_feasible_tt = copy.deepcopy(global_variables.time_table)
 
 
 def position_swap(tabu_list):
     # all necessary variables
     global last_distance, best_feasible_tt, best_distance
     position_1, position_2 = neighborhood.get_random_positions()
-    events = initTimeTable.events_type_1
-    empty_positions = initTimeTable.empty_positions
-    time_table = initTimeTable.time_table
+    events = global_variables.events_type_1
+    empty_positions = global_variables.empty_positions
+    time_table = global_variables.time_table
 
     # check if the moves are already in the tabu list
     # if not, add them to the list
@@ -44,8 +44,8 @@ def position_swap(tabu_list):
         for position in empty_positions:
             room = position[0]
             time_slot = position[1]
-            if hardConstraints.course_event_fits_in_to_time_slot(event, time_slot) and hardConstraints.room_capacity_constraint(event, room):
-                constructTimeTable.assign_course_to_position(event, position)
+            if hard_constraints.course_event_fits_in_to_time_slot(event, time_slot) and hard_constraints.room_capacity_constraint(event, room):
+                construct_time_table.assign_course_to_position(event, position)
                 events_temp_back_up.remove(event)
                 break
 
@@ -54,15 +54,15 @@ def position_swap(tabu_list):
     delta_e = distance - last_distance
 
     if delta_e > 0:
-        initTimeTable.events_type_1 = events_back_up
-        initTimeTable.empty_positions = empty_positions_back_up
-        initTimeTable.time_table = time_table_back_up
+        global_variables.events_type_1 = events_back_up
+        global_variables.empty_positions = empty_positions_back_up
+        global_variables.time_table = time_table_back_up
         return False
 
     # Success!
     last_distance = distance
     if distance < best_distance:
-        best_feasible_tt = copy.deepcopy(initTimeTable.time_table)
+        best_feasible_tt = copy.deepcopy(global_variables.time_table)
         best_distance = distance
     return True
 
@@ -78,7 +78,7 @@ def tabu_search():
     tabu_positions = []
     tabu_split = []
 
-    best_result = len(initTimeTable.courses_type_1)
+    best_result = len(global_variables.courses_type_1)
 
     while best_result > 0 and time.clock() > starting_time + max_time:
         # if tabu list is full, remove the oldest entry
