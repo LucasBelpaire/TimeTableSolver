@@ -1,9 +1,5 @@
-import processInput
-import data
-
 """
-    This script initializes all variables that are needed to construct the time table.
-    The value of variables depend on the input that gets processed by the processInput script.
+    This module holds all variables which the different parts of the program need.
 """
 
 # Variables:
