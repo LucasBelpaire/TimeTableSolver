@@ -1,23 +1,19 @@
 import neighborhood
-import global_variables
-import hard_constraints
-import construct_time_table
+import global_variables as gv
+import hard_constraints as hc
 import time
 import random
 import copy
 
-best_distance = len(global_variables.events_type_1)
+best_distance = len(gv.events)
 last_distance = best_distance
-best_feasible_tt = copy.deepcopy(global_variables.time_table)
+best_feasible_tt = copy.deepcopy(gv.time_table)
 
 
 def position_swap(tabu_list):
     # all necessary variables
     global last_distance, best_feasible_tt, best_distance
     position_1, position_2 = neighborhood.get_random_positions()
-    events = global_variables.events_type_1
-    empty_positions = global_variables.empty_positions
-    time_table = global_variables.time_table
 
     # check if the moves are already in the tabu list
     # if not, add them to the list
@@ -27,9 +23,9 @@ def position_swap(tabu_list):
     tabu_list.append((position_2, position_1))
 
     # make a back up, so a rollback is possible
-    events_back_up = copy.copy(events)
-    empty_positions_back_up = copy.copy(empty_positions)
-    time_table_back_up = copy.copy(time_table)
+    events_back_up = copy.copy(gv.events)
+    empty_positions_back_up = copy.copy(gv.empty_positions)
+    time_table_back_up = copy.copy(gv.time_table)
 
     success = neighborhood.swap_positions(position_1, position_2, feasibility=False)
 
@@ -37,15 +33,16 @@ def position_swap(tabu_list):
         return False
 
     # shuffle events, and try to place them in a random order
-    random.shuffle(events)
-    events_temp_back_up = copy.copy(events)
+    random.shuffle(gv.events)
+    events_temp_back_up = copy.copy(gv.events)
 
-    for event in events:
-        for position in empty_positions:
-            room = position[0]
+    for event in gv.events:
+        for position in gv.empty_positions:
+            room_fi_number = position[0]
             time_slot = position[1]
-            if hard_constraints.course_event_fits_in_to_time_slot(event, time_slot) and hard_constraints.room_capacity_constraint(event, room):
-                construct_time_table.assign_course_to_position(event, position)
+            room = gv.class_rooms_dict[room_fi_number]
+            if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                gv.assign_course_to_position(event, position)
                 events_temp_back_up.remove(event)
                 break
 
@@ -54,15 +51,15 @@ def position_swap(tabu_list):
     delta_e = distance - last_distance
 
     if delta_e > 0:
-        global_variables.events_type_1 = events_back_up
-        global_variables.empty_positions = empty_positions_back_up
-        global_variables.time_table = time_table_back_up
+        gv.events = events_back_up
+        gv.empty_positions = empty_positions_back_up
+        gv.time_table = time_table_back_up
         return False
 
     # Success!
     last_distance = distance
     if distance < best_distance:
-        best_feasible_tt = copy.deepcopy(global_variables.time_table)
+        best_feasible_tt = copy.deepcopy(gv.time_table)
         best_distance = distance
     return True
 
@@ -78,9 +75,10 @@ def tabu_search():
     tabu_positions = []
     tabu_split = []
 
-    best_result = len(global_variables.courses_type_1)
+    # Add all unplaced events to events
+    gv.events = gv.unplaced_events
 
-    while best_result > 0 and time.clock() > starting_time + max_time:
+    while len(gv.events) > 0 and time.clock() < starting_time + max_time:
         # if tabu list is full, remove the oldest entry
         if len(tabu_positions) == tabu_length:
             tabu_positions.pop(0)
@@ -93,5 +91,5 @@ def tabu_search():
             position_swap(tabu_positions)
         if action == 1:
             split_event(tabu_split)
-
+    gv.time_table = best_feasible_tt
     return best_distance, best_feasible_tt
