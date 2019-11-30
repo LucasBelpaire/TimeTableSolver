@@ -33,10 +33,12 @@ def swap_positions(position_1, position_2, feasibility=True):
     :return:
     """
     event_1 = gv.time_table[position_1]
-    room_1 = position_1[0]
+    fi_number_1 = position_1[0]
+    room_1 = gv.class_rooms_dict[fi_number_1]
     time_slot_1 = position_1[1]
     event_2 = gv.time_table[position_2]
-    room_2 = position_2[0]
+    fi_number_2 = position_2[0]
+    room_2 = gv.class_rooms_dict[fi_number_2]
     time_slot_2 = position_2[1]
 
     # Check if both events are not None or that they are not equal
