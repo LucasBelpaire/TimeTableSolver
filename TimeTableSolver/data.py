@@ -108,8 +108,5 @@ class CourseEvent:
         return False
 
     def remove_assigned_lecturer(self):
-        try:
-            self.assigned_lecturer = None
-            return True
-        except ValueError:
-            return False
+        self.assigned_lecturer = None
+
