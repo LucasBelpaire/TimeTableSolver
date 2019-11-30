@@ -1,7 +1,8 @@
 """
     This module holds all variables which the different parts of the program need.
 """
-import random
+import hard_constraints as hc
+import copy
 
 # Variables:
 events = []  # events is a list of all course events
@@ -43,16 +44,23 @@ def assign_course_to_position(course_event, position):
         # adding the time_slot to the list of occupied time_slots
         curriculum.add_occupied_time_slot(time_slot)
 
-    lecturers = course.lecturers
-    random.shuffle(lecturers)
-    chosen_lecturer = lecturers[0]
+    # get a lecturer
+    assigned_lecturer = None
+    for lecturer in course_event.lecturers:
+        if not hc.lecturer_is_occupied_in_time_slot(lecturer, time_slot):
+            assigned_lecturer = lecturer
+            continue
 
-    chosen_lecturer.add_occupied_time_slot(time_slot)
-    course_event.set_assigned_lecturer(chosen_lecturer)
+    assigned_lecturer.add_occupied_time_slot(time_slot)
+    course_event.set_assigned_lecturer(copy.copy(assigned_lecturer))
 
     course.course_hours -= 1
-    events.remove(course_event)
-    empty_positions.remove(position)
+    try:
+        empty_positions.remove(position)
+        events.remove(course_event)
+    except ValueError:
+        # event got swapped, so is not part of events
+        return
 
 
 def remove_course_from_position(position):
@@ -75,8 +83,7 @@ def remove_course_from_position(position):
         for curriculum in course.curricula:
             curriculum.remove_occupied_time_slot(time_slot)
 
-        assigned_lecturer = course_event.assigned_lecturer
-        assigned_lecturer.remove_occupied_time_slot(time_slot)
+        course_event.assigned_lecturer.remove_occupied_time_slot(time_slot)
         course_event.remove_assigned_lecturer()
 
         return True
