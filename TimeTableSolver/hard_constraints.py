@@ -3,7 +3,17 @@
 """
 
 
-def lecturer_is_occupied_in_time_slot(course_event, time_slot):
+def lecturer_is_occupied_in_time_slot(lecturer, time_slot):
+    """
+    Function checks if the given lecturer is free in the given time slot
+    :param lecturer: instance of Lecturer
+    :param time_slot: time slot (int)
+    :return: True if the lecturer is occupied, False otherwise
+    """
+    return lecturer.contains_time_slot(time_slot)
+
+
+def lecturers_are_occupied_in_time_slot(course_event, time_slot):
     """
     This function will check if a lecturer is available for a given time
     :param course_event: instance of CourseEvent, contains the list of lecturers.
@@ -14,7 +24,7 @@ def lecturer_is_occupied_in_time_slot(course_event, time_slot):
         return True
 
     for lecturer in course_event.lecturers:
-        if not lecturer.contains_time_slot(time_slot):
+        if not lecturer_is_occupied_in_time_slot(lecturer, time_slot):
             return False
 
     return True
@@ -56,5 +66,5 @@ def course_event_fits_into_time_slot(course_event, time_slot):
     :param time_slot: the time slot that will be checked.
     :return: True if the course can be assigned to a specific time slot, False otherwise.
     """
-    return not lecturer_is_occupied_in_time_slot(course_event, time_slot) and not \
+    return not lecturers_are_occupied_in_time_slot(course_event, time_slot) and not \
         curriculum_is_occupied_in_time_slot(course_event, time_slot)
