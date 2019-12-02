@@ -49,40 +49,55 @@ def swap_positions(position_1, position_2, feasibility=True):
     if feasibility:
         # Check if no hard constraints get violated
         if event_1 is not None:
-            gv.remove_course_from_position(position_2)
+            remove_pos2 = gv.remove_course_from_position(position_2)
+
             swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2) and hc.room_capacity_constraint(event_1, room_2)
             gv.assign_course_to_position(event_2, position_2)
+
             if not swap_possible:
+                return False
+            remove_pos1 = gv.remove_course_from_position(position_1)
+
+            if not remove_pos1 or not remove_pos2:
                 return False
 
         if event_2 is not None:
-            gv.remove_course_from_position(position_1)
+            remove_pos1 = gv.remove_course_from_position(position_1)
             swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1) and hc.room_capacity_constraint(event_2, room_1)
             gv.assign_course_to_position(event_1, position_1)
             if not swap_possible:
                 return False
+            remove_pos2 = gv.remove_course_from_position(position_2)
+            if not remove_pos1 or not remove_pos2:
+                return False
 
         # swapping is possible, so the positions of the two events will get swapped
-        gv.remove_course_from_position(position_1)
-        gv.remove_course_from_position(position_2)
         gv.assign_course_to_position(event_1, position_2)
         gv.assign_course_to_position(event_2, position_1)
         return True
 
     # if feasibility is false, the swap will occur if no hard constraints are broken for at least one event
     # the other event will get swapped if possible, or get appended the the unplaced_list if not
-    gv.remove_course_from_position(position_2)
-    gv.remove_course_from_position(position_1)
+
+
     if event_1 is not None:
+        remove_pos1 = gv.remove_course_from_position(position_1)
         swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2) and hc.room_capacity_constraint(event_1, room_2)
         if swap_possible:
             gv.assign_course_to_position(event_1, position_2)
         else:
             gv.unplaced_events.append(event_1)
+        if not remove_pos1:
+            return False
+
     if event_2 is not None:
+        remove_pos2 = gv.remove_course_from_position(position_2)
         swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1) and hc.room_capacity_constraint(event_2, room_1)
         if swap_possible:
             gv.assign_course_to_position(event_2, position_1)
         else:
             gv.unplaced_events.append(event_2)
+        if not remove_pos2:
+            return False
+
     return True

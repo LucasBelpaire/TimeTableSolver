@@ -14,6 +14,8 @@ def position_swap(tabu_list):
     # all necessary variables
     global last_distance, best_feasible_tt, best_distance
     position_1, position_2 = neighborhood.get_random_positions()
+    if position_2 == position_1:
+        print("DEZELFDE POSITIES")
 
     # check if the moves are already in the tabu list
     # if not, add them to the list
@@ -92,4 +94,5 @@ def tabu_search():
         if action == 1:
             split_event(tabu_split)
     gv.time_table = best_feasible_tt
+
     return best_distance, best_feasible_tt
