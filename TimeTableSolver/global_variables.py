@@ -59,8 +59,8 @@ def assign_course_to_position(course_event, position):
 
     assigned_lecturer.add_occupied_time_slot(time_slot)
     done = course_event.set_assigned_lecturer(assigned_lecturer)
-    #if not done:
-        #print("Fout bij het zetten van de lecturer")
+    if not done:
+        print("Fout bij het zetten van de lecturer")
 
 
     course.course_hours -= 1
@@ -97,7 +97,7 @@ def remove_course_from_position(position):
 
         if course_event.assigned_lecturer == None:
             #TODO: waarom komt dit nog steeds voor in onze code
-            #print("een non lecturer bij de les:" + str(course.code))
+            print("een non lecturer bij de les:" + str(course.code))
             return False
 
         course_event.assigned_lecturer.remove_occupied_time_slot(time_slot)

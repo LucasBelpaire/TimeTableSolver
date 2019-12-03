@@ -20,15 +20,13 @@ def main():
 
     print("unplaced events:" + str(len(gv.unplaced_events)))
 
-
-
     # Start the second phase of the feasibility process: tabu search
-    #print("Starting tabu search phase." + str(time.perf_counter() - start_time))
-    #best_distance, best_feasible_tt = feasible_timetable.tabu_search()
-    #print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
+    print("Starting tabu search phase." + str(time.perf_counter() - start_time))
+    best_distance, best_feasible_tt = feasible_timetable.tabu_search()
+    print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
 
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
-    #gv.time_table = best_feasible_tt
+    gv.time_table = best_feasible_tt
     go.generate_output_from_time_table()
     print("Generating output completed.  " + str(time.perf_counter() - start_time))
 
