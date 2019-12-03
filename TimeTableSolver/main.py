@@ -1,8 +1,8 @@
 import construct_timetable as ctt
 import process_input
-import feasible_timetable
 import generate_output as go
 import time
+import feasible_timetable
 
 
 def main():
@@ -22,6 +22,7 @@ def main():
     feasible_timetable.tabu_search()
     print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
 
+    # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
     go.generate_output_from_time_table()
     print("Generating output completed.  " + str(time.perf_counter() - start_time))
