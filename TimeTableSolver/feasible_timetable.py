@@ -5,9 +5,9 @@ import time
 import random
 import copy
 
-best_distance = len(gv.events)
-last_distance = best_distance
-best_feasible_tt = copy.deepcopy(gv.time_table)
+best_distance = None
+last_distance = None
+best_feasible_tt = None
 
 
 def position_swap(tabu_list):
@@ -34,7 +34,7 @@ def position_swap(tabu_list):
 
     # shuffle events, and try to place them in a random order
     random.shuffle(gv.events)
-    events_temp_back_up = copy.copy(gv.events)
+    events_to_remove = []
 
     for event in gv.events:
         for position in gv.empty_positions:
@@ -43,11 +43,14 @@ def position_swap(tabu_list):
             room = gv.class_rooms_dict[room_fi_number]
             if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
                 gv.assign_course_to_position(event, position)
-                events_temp_back_up.remove(event)
+                events_to_remove.append(event)
                 break
 
-    events = events_temp_back_up
-    distance = len(events)
+    # remove all placed events
+    for event in events_to_remove:
+        gv.events.remove(event)
+
+    distance = len(gv.events)
     delta_e = distance - last_distance
 
     if delta_e > 0:
@@ -69,6 +72,7 @@ def split_event(tabu_list):
 
 
 def tabu_search():
+    global best_distance, last_distance, best_feasible_tt
     starting_time = time.clock()
     max_time = 90
     tabu_length = 500
@@ -76,7 +80,12 @@ def tabu_search():
     tabu_split = []
 
     # Add all unplaced events to events
-    gv.events = gv.unplaced_events
+    gv.events += gv.unplaced_events
+
+    best_distance = len(gv.events)
+    print(best_distance)
+    last_distance = best_distance
+    best_feasible_tt = copy.deepcopy(gv.time_table)
 
     while len(gv.events) > 0 and time.clock() < starting_time + max_time:
         # if tabu list is full, remove the oldest entry

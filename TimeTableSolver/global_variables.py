@@ -35,6 +35,12 @@ def assign_course_to_position(course_event, position):
     :return: True if the event is successfully scheduled, False otherwise
     """
 
+    if time_table[position] is not None:
+        remove_course_from_position(position)
+
+    if course_event is None:
+        return False
+
     time_table[position] = course_event
     course = courses_dict[course_event.course_code]
     room_fi_number = position[0]
@@ -52,7 +58,7 @@ def assign_course_to_position(course_event, position):
             continue
 
     assigned_lecturer.add_occupied_time_slot(time_slot)
-    course_event.set_assigned_lecturer(copy.copy(assigned_lecturer))
+    course_event.set_assigned_lecturer(assigned_lecturer.ugent_id)
 
     course.course_hours -= 1
     try:
@@ -83,7 +89,9 @@ def remove_course_from_position(position):
         for curriculum in course.curricula:
             curriculum.remove_occupied_time_slot(time_slot)
 
-        course_event.assigned_lecturer.remove_occupied_time_slot(time_slot)
+        ugent_id = course_event.assigned_lecturer
+        lecturer = lecturers_dict[ugent_id]
+        lecturer.remove_occupied_time_slot(time_slot)
         course_event.remove_assigned_lecturer()
 
         return True
