@@ -38,6 +38,12 @@ def assign_course_to_position(course_event, position):
         print("een nieuwe les plaatsen zonder de oude te verwijderen")
         remove_course_from_position(position)
 
+    if time_table[position] is not None:
+        remove_course_from_position(position)
+
+    if course_event is None:
+        return False
+
     time_table[position] = course_event
     course = courses_dict[course_event.course_code]
     room_fi_number = position[0]
@@ -58,10 +64,7 @@ def assign_course_to_position(course_event, position):
 
 
     assigned_lecturer.add_occupied_time_slot(time_slot)
-    done = course_event.set_assigned_lecturer(assigned_lecturer)
-    #if not done:
-        #print("Fout bij het zetten van de lecturer")
-
+    course_event.set_assigned_lecturer(assigned_lecturer.ugent_id)
 
     course.course_hours -= 1
     try:
@@ -95,12 +98,9 @@ def remove_course_from_position(position):
         for curriculum in course.curricula:
             curriculum.remove_occupied_time_slot(time_slot)
 
-        if course_event.assigned_lecturer == None:
-            #TODO: waarom komt dit nog steeds voor in onze code
-            #print("een non lecturer bij de les:" + str(course.code))
-            return False
-
-        course_event.assigned_lecturer.remove_occupied_time_slot(time_slot)
+        ugent_id = course_event.assigned_lecturer
+        lecturer = lecturers_dict[ugent_id]
+        lecturer.remove_occupied_time_slot(time_slot)
         course_event.remove_assigned_lecturer()
 
         return True

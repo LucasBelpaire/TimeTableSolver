@@ -1,4 +1,5 @@
 import math
+import copy
 
 
 class GeneralInfo:
@@ -101,9 +102,9 @@ class CourseEvent:
         self.event_number = event_number
         self.assigned_lecturer = None
 
-    def set_assigned_lecturer(self, lecturer):
+    def set_assigned_lecturer(self, ugent_id):
         if self.assigned_lecturer is None:
-            self.assigned_lecturer = lecturer
+            self.assigned_lecturer = copy.deepcopy(ugent_id)
             return True
         return False
 

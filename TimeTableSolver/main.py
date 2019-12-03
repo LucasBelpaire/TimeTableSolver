@@ -1,9 +1,8 @@
 import construct_timetable as ctt
 import process_input
-import feasible_timetable
 import generate_output as go
 import time
-import global_variables as gv
+import feasible_timetable
 
 
 def main():
@@ -27,6 +26,7 @@ def main():
     #best_distance, best_feasible_tt = feasible_timetable.tabu_search()
     #print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
 
+    # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
     #gv.time_table = best_feasible_tt
     go.generate_output_from_time_table()
