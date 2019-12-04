@@ -54,6 +54,8 @@ def room_capacity_constraint(course_event, room):
     :param room: instance of ClassRoom
     :return: True if there is enough place for all students, False otherwise
     """
+    if course_event is None:
+        return False
     if course_event.student_amount <= room.capacity:
         return True
     return False
