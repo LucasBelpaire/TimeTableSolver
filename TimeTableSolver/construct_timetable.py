@@ -105,7 +105,7 @@ def have_common_lecturers(course_event, course):
 
 def have_common_curricula(course_event, course):
     """
-    Checks if two courses have a common curriculum
+    Checks if two courses have a common curriculum.
     :param course_event: instance of CourseEvent
     :param course: instance of course
     :return: True if there is at least one common curriculum, False otherwise

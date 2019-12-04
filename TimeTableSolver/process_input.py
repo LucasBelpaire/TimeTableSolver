@@ -29,8 +29,10 @@ for course in project_json['vakken']:
     student_amounts = int(course['studenten'])
 
     contact_hours = course['contacturen']
-    if contact_hours >= 75 or contact_hours is 0 or student_amounts < int(min_amount_student):
+    if contact_hours >= 75 or contact_hours is 0:
         continue
+    if student_amounts < int(min_amount_student):
+        student_amounts = int(min_amount_student)
     lecturers = []
     for lecturer in course['lesgevers']:
         ugent_id = lecturer['UGentid']
@@ -140,8 +142,8 @@ for room in class_rooms_dict.values():
         time_table[(room_fi_number, time_slot)] = None
 
 # TODO: this variable is for the testing phase only, needs to be changed
-events = events_type_1
-courses_set = courses_type_1
+events = events_type_1 + events_type_2
+courses_set = courses_type_1.union(courses_type_2)
 
 
 def set_global_variables():
