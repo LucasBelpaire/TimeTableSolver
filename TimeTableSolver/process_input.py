@@ -114,9 +114,8 @@ generalInfo = data.GeneralInfo(academy_year=academy_year,
 
 # TODO: Generalize events_type_1 and events_type_2
 events_type_1 = []  # All course events with courses that have more than or equal to 2 course hours per week
-courses_type_1 = set()  # All courses with more than 2 course hours per week
+courses_set = set()  # All courses with more than 2 course hours per week
 events_type_2 = []  # course events with courses that have less than 2 course hours per week
-courses_type_2 = set()  # All courses with less than 2 course hours per week
 empty_positions = []
 time_table = {}
 for course in courses_dict.values():
@@ -130,10 +129,10 @@ for course in courses_dict.values():
         course_events.append(course_event)
     if len(course_events) >= 2:
         events_type_1 += course_events
-        courses_type_1.add(course)
+        courses_set.add(course)
         continue
     events_type_2 += course_events
-    courses_type_2.add(course)
+    courses_set.add(course)
 
 for room in class_rooms_dict.values():
     for time_slot in range(number_of_time_slots):
@@ -143,7 +142,6 @@ for room in class_rooms_dict.values():
 
 # TODO: this variable is for the testing phase only, needs to be changed
 events = events_type_1
-courses_set = courses_type_1
 
 
 def set_global_variables():
