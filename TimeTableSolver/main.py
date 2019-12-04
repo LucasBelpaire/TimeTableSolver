@@ -1,6 +1,9 @@
 import construct_timetable as ctt
 import process_input
 import generate_output as go
+import global_variables as gv
+import process_input as pi
+import copy
 import time
 import feasible_timetable
 
@@ -18,7 +21,7 @@ def main():
     print("Initial construction of timetable finished.  " + str(time.perf_counter() - start_time))
 
     # Start the second phase of the feasibility process: tabu search
-    print("Starting tabu search phase." + str(time.perf_counter() - start_time))
+    print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
     feasible_timetable.tabu_search()
     print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
 

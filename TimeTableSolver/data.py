@@ -22,7 +22,7 @@ class Course:
         self.name = name
         self.student_amount = int(student_amount)
         self.contact_hours = contact_hours
-        self.course_hours = math.floor(contact_hours*0.8 / 12)
+        self.course_hours = math.ceil(contact_hours*0.8 / 12)
         self.lecturers = lecturers
         self.curricula = curricula
         self.course_events = []
@@ -110,4 +110,3 @@ class CourseEvent:
 
     def remove_assigned_lecturer(self):
         self.assigned_lecturer = None
-
