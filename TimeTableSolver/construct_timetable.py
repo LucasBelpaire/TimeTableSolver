@@ -43,7 +43,6 @@ class ConstructTimeTable:
             self.time_table.assign_course_to_position(course_event, best_fit)
             return unplaced_events
 
-
     def order_course_events_by_priority(self, course_events, courses_set):
         """
         Orders the course events by priority,
@@ -72,7 +71,8 @@ class ConstructTimeTable:
         courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
         return courses_sorted
 
-    def count_lectures_per_course(self,courses_set):
+    @staticmethod
+    def count_lectures_per_course(courses_set):
         """
         Get the amount of lectures per course.
         :param courses_set: a list of course events
@@ -83,18 +83,20 @@ class ConstructTimeTable:
             lectures_amount[course.code] = course.course_hours
         return lectures_amount
 
-    def compute_amount_of_available_time_slots(self,course_event):
+    @staticmethod
+    def compute_amount_of_available_time_slots(course_event):
         """
         :param course_event: an instance of course event
         :return: the total number of available time slots for the given course
         """
         amount = 0
-        for i in range(gi.number_of_time_slots):
+        for i in range(gi.total_course_hours):
             if hc.course_event_fits_into_time_slot(course_event, i):
                 amount += 1
         return amount
 
-    def have_common_lecturers(self, course_event, course):
+    @staticmethod
+    def have_common_lecturers(course_event, course):
         """
         Checks if the two courses have a common lecturer.
         :param course_event: instance of CourseEvent
@@ -106,7 +108,8 @@ class ConstructTimeTable:
                 return True
         return False
 
-    def have_common_curricula(self, course_event, course):
+    @staticmethod
+    def have_common_curricula(course_event, course):
         """
         Checks if two courses have a common curriculum.
         :param course_event: instance of CourseEvent
@@ -170,7 +173,8 @@ class ConstructTimeTable:
         positions.sort(key=lambda tup: positions_ranking[tup[0]], reverse=False)
         return positions
 
-    def get_positions_ranking1(self, room, course_event):
+    @staticmethod
+    def get_positions_ranking1(room, course_event):
         """
         Rank1 is equal to the not home penalty, the smaller the better.
         :param room: an instance of ClassRoom
@@ -179,7 +183,8 @@ class ConstructTimeTable:
         """
         return sc.return_not_home_penalty(room, course_event)
 
-    def get_positions_ranking2(self, room, course_event):
+    @staticmethod
+    def get_positions_ranking2(room, course_event):
         """
         Rank2 indicates how many empty places there are left in a room.
         The smaller the better.
