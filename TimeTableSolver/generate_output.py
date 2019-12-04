@@ -1,17 +1,16 @@
-import global_variables
 import process_input
 import json
 import math
 
 
-def generate_output_from_time_table():
+def generate_output_from_time_table(tt):
     """
     This function will convert the end solution time table to a correct json file
     The JSON file will contain all reservation for a room during the semester
     :return: we return true if successful
     """
 
-    end_time_table = global_variables.time_table
+    end_time_table = tt
 
     room_reservation_dict = []
 
