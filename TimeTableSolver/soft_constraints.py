@@ -17,7 +17,7 @@ def return_not_home_penalty(room, course_event):
     curricula_of_courses = course_event.curricula
 
     total_penalty = 0
-    for curriculum in curricula_of_courses: 
+    for curriculum in curricula_of_courses:
         if curriculum.home_site == room.site_id:
             continue
 
