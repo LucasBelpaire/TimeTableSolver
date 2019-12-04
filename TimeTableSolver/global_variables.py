@@ -71,7 +71,7 @@ def assign_course_to_position(course_event, position):
         empty_positions.remove(position)
         events.remove(course_event)
     except ValueError:
-        # event got swapped, so is not part of events
+        # event got swapped, so is not part of events.
         return
 
 
