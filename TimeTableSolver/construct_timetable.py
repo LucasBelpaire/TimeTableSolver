@@ -25,7 +25,7 @@ class ConstructTimeTable:
         # collect all available positions for this event
         for index, course_event in enumerate(sorted_events):
             available_positions = []
-            for room_fi_number, time_slot in self.timetable.empty_postions:
+            for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
                 fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
                     course_event, room)
@@ -40,7 +40,7 @@ class ConstructTimeTable:
             sorted_positions = self.order_positions_by_priority(available_positions, course_event)
             best_fit = sorted_positions.pop(0)
             self.timetable.assign_course_to_position(course_event, best_fit)
-            return unplaced_events, self.timetable
+        return unplaced_events, self.timetable
 
     def order_course_events_by_priority(self, course_events, courses_set):
         """
