@@ -2,6 +2,7 @@ import json
 import data
 import copy
 import global_variables as gv
+import general_info as gi
 
 path = "datasets/project.json"
 
@@ -144,20 +145,22 @@ for room in class_rooms_dict.values():
 events = events_type_1
 
 
-def set_global_variables():
+def init_general_info():
     """
-    this method will set the value of all variables in the globalVariables module.
+    this method will set the value of all variables in the generalInfo module.
     These values depend on the input processed in this module.
     """
-    gv.events = copy.deepcopy(events)
-    gv.courses_set = courses_set
-    gv.time_table = copy.deepcopy(time_table)
-    gv.number_of_time_slots = copy.deepcopy(number_of_time_slots)
-    gv.empty_positions = copy.deepcopy(empty_positions)
-    gv.generalInfo = copy.deepcopy(generalInfo)
-    gv.courses_dict = copy.deepcopy(courses_dict)
-    gv.lecturers_dict = copy.deepcopy(lecturers_dict)
-    gv.curricula_dict = copy.deepcopy(curricula_dict)
-    gv.sites_dict = copy.deepcopy(sites_dict)
-    gv.class_rooms_dict = copy.copy(class_rooms_dict)
+    gi.academy_year = academy_year
+    gi.semester = semester
+    gi.kilometer_penalty = kilometer_penalty
+    gi.late_hour_penalty = late_hours_penalty
+    gi.not_home_penalty = not_home_penalty
+    gi.min_amount_students = min_amount_student
+    gi.biggest_room_capacity = biggest_room_capacity
+
+    gi.courses_dict = courses_dict
+    gi.lecturers_dict = lecturers_dict
+    gi.curricula_dict = curricula_dict
+    gi.sites_dict = sites_dict
+    gi.class_rooms_dict = class_rooms_dict
 
