@@ -34,9 +34,6 @@ def assign_course_to_position(course_event, position):
     :param position: (fi_number, time_slot)
     :return: True if the event is successfully scheduled, False otherwise
     """
-    if time_table[position] != None:
-        print("een nieuwe les plaatsen zonder de oude te verwijderen")
-        remove_course_from_position(position)
 
     if time_table[position] is not None:
         remove_course_from_position(position)
@@ -55,13 +52,10 @@ def assign_course_to_position(course_event, position):
 
     # get a lecturer
     assigned_lecturer = None
-    if len(course_event.lecturers) == 0:
-        print("no lecturers")
     for lecturer in course_event.lecturers:
         if not hc.lecturer_is_occupied_in_time_slot(lecturer, time_slot):
             assigned_lecturer = lecturer
             continue
-
 
     assigned_lecturer.add_occupied_time_slot(time_slot)
     course_event.set_assigned_lecturer(assigned_lecturer.ugent_id)
@@ -83,13 +77,11 @@ def remove_course_from_position(position):
     """
     fi_number = position[0]
     time_slot = position[1]
-    if time_table[position] is None:
-        #print("we proberen een lege positie te verwijderen")
-        return False
-    else:
+    if time_table[position] is not None:
         course_event = time_table[position]
         time_table[position] = None
         empty_positions.append(position)
+        events.append(course_event)
 
         course = courses_dict[course_event.course_code]
         course.course_hours += 1
