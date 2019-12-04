@@ -16,6 +16,7 @@ weeks = 12
 
 # mappings
 
+courses_set = None
 courses_dict = None
 lecturers_dict = None
 curricula_dict = None

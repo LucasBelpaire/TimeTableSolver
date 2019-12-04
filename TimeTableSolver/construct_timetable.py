@@ -1,4 +1,3 @@
-import time
 import hard_constraints as hc
 import soft_constraints as sc
 import math
@@ -7,12 +6,12 @@ import general_info as gi
 
 class ConstructTimeTable:
 
-    def __init__(self, events_list, courses_set, time_table):
+    def __init__(self, events_list, courses_set, timetable):
         self.events = events_list
         self.courses = courses_set
-        self.time_table = time_table
+        self.timetable = timetable
 
-    def construct_time_table(self):
+    def construct(self):
         """
         This function will try to build an initial timetable using an heuristic approach.
         It will prioritize "harder" events, and try to place them in their best positions.
@@ -26,7 +25,7 @@ class ConstructTimeTable:
         # collect all available positions for this event
         for index, course_event in enumerate(sorted_events):
             available_positions = []
-            for room_fi_number, time_slot in self.time_table.empty_postions:
+            for room_fi_number, time_slot in self.timetable.empty_postions:
                 room = gi.class_rooms_dict[room_fi_number]
                 fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
                     course_event, room)
@@ -40,8 +39,8 @@ class ConstructTimeTable:
             # sort the available positions by possible fit, the best one gets selected
             sorted_positions = self.order_positions_by_priority(available_positions, course_event)
             best_fit = sorted_positions.pop(0)
-            self.time_table.assign_course_to_position(course_event, best_fit)
-            return unplaced_events
+            self.timetable.assign_course_to_position(course_event, best_fit)
+            return unplaced_events, self.timetable
 
     def order_course_events_by_priority(self, course_events, courses_set):
         """

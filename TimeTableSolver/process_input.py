@@ -4,6 +4,7 @@ import copy
 import global_variables as gv
 import general_info as gi
 
+
 path = "datasets/project.json"
 
 # load in the json file
@@ -127,11 +128,22 @@ for course in courses_dict.values():
     events_type_2 += course_events
     courses_set.add(course)
 
-for room in class_rooms_dict.values():
-    for time_slot in range(number_of_time_slots):
-        room_fi_number = room.fi_number
-        empty_positions.append((room_fi_number, time_slot))
-        time_table[(room_fi_number, time_slot)] = None
+
+def create_initial_events_lists():
+    return events_type_1, events_type_2
+
+
+def create_initial_timetable():
+    for room in class_rooms_dict.values():
+        for time_slot in range(number_of_time_slots):
+            room_fi_number = room.fi_number
+            empty_positions.append((room_fi_number, time_slot))
+            time_table[(room_fi_number, time_slot)] = None
+    timetable = data.TimeTable(timetable=time_table,
+                               occupied_positions=[],
+                               empty_positions=empty_positions)
+    return timetable
+
 
 # TODO: this variable is for the testing phase only, needs to be changed
 events = events_type_1
@@ -150,6 +162,7 @@ def init_general_info():
     gi.min_amount_students = min_amount_student
     gi.biggest_room_capacity = biggest_room_capacity
 
+    gi.courses_set = courses_set
     gi.courses_dict = courses_dict
     gi.lecturers_dict = lecturers_dict
     gi.curricula_dict = curricula_dict
