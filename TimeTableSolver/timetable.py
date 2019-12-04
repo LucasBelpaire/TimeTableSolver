@@ -24,7 +24,7 @@ class TimeTable:
             return False
 
         self.timetable[position] = course_event
-        course = hc.courses_dict[course_event.course_code]
+        course = gi.courses_dict[course_event.course_code]
         room_fi_number = position[0]
         time_slot = position[1]
 
@@ -74,6 +74,6 @@ class TimeTable:
             lecturer.remove_occupied_time_slot(time_slot)
             course_event.remove_assigned_lecturer()
 
-            return True
+            return course_event
 
         return False
