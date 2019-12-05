@@ -136,12 +136,13 @@ class TimeTable:
         for lecturer in course_event.lecturers:
             if not hc.lecturer_is_occupied_in_time_slot(lecturer, time_slot):
                 assigned_lecturer = lecturer
-                continue
+                break
 
         assigned_lecturer.add_occupied_time_slot(time_slot)
         course_event.set_assigned_lecturer(assigned_lecturer.ugent_id)
 
         course.course_hours -= 1
+        self.occupied_positions.append(position)
         try:
             self.empty_positions.remove(position)
         except ValueError:
@@ -160,7 +161,7 @@ class TimeTable:
             course_event = self.timetable[position]
             self.timetable[position] = None
             self.empty_positions.append(position)
-
+            self.occupied_positions.remove(position)
             course = gi.courses_dict[course_event.course_code]
             course.course_hours += 1
 
