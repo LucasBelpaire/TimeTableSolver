@@ -10,7 +10,7 @@ class ImproveTimeTable:
         The constructor for the third phase the improvement phase
         :param timetable: The feasible timetable that we want to improve
         """
-        self.timetable = timetable #this will hold the final time table with the best penalty cost on the end
+        self.timetable = timetable # this will hold the final time table with the best penalty cost on the end
         self.best_cost = sc.return_total_penalty_of_timetable(self.timetable)
         self.last_cost = self.best_cost
 
@@ -27,6 +27,5 @@ class ImproveTimeTable:
         return None
 
     def swap_time_slots(self):
-        time_slot_1, time_slot_2 = neighborhood.get_random_time_slots()
+        return None
 
-        succesfull, backup1, backup2 = neighborhood.swap_2_time_slots(time_slot_1, time_slot_2)
