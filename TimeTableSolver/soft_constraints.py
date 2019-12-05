@@ -35,3 +35,26 @@ def return_not_home_penalty(room, course_event):
         total_penalty += gi.kilometer_penalty * distance
 
     return total_penalty
+
+
+def return_room_size_penalty():
+    return None
+
+
+def return_last_two_hour_penalty():
+    
+    return None
+
+
+def return_to_many_straight_hours_penalty():
+    return None
+
+
+def return_only_one_hour_penalty():
+    return None
+
+
+def return_total_penalty_of_timetable(timetable):
+    return None
+
+
