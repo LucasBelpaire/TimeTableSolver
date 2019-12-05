@@ -1,4 +1,3 @@
-import time
 import hard_constraints as hc
 import soft_constraints as sc
 import math
@@ -7,12 +6,12 @@ import general_info as gi
 
 class ConstructTimeTable:
 
-    def __init__(self, events_list, courses_set, time_table):
+    def __init__(self, events_list, courses_set, timetable):
         self.events = events_list
         self.courses = courses_set
-        self.time_table = time_table
+        self.timetable = timetable
 
-    def construct_time_table(self):
+    def construct(self):
         """
         This function will try to build an initial timetable using an heuristic approach.
         It will prioritize "harder" events, and try to place them in their best positions.
@@ -26,7 +25,7 @@ class ConstructTimeTable:
         # collect all available positions for this event
         for index, course_event in enumerate(sorted_events):
             available_positions = []
-            for room_fi_number, time_slot in self.time_table.empty_postions:
+            for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
                 fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
                     course_event, room)
@@ -40,9 +39,8 @@ class ConstructTimeTable:
             # sort the available positions by possible fit, the best one gets selected
             sorted_positions = self.order_positions_by_priority(available_positions, course_event)
             best_fit = sorted_positions.pop(0)
-            self.time_table.assign_course_to_position(course_event, best_fit)
-            return unplaced_events
-
+            self.timetable.assign_course_to_position(course_event, best_fit)
+        return unplaced_events, self.timetable
 
     def order_course_events_by_priority(self, course_events, courses_set):
         """
@@ -72,7 +70,8 @@ class ConstructTimeTable:
         courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
         return courses_sorted
 
-    def count_lectures_per_course(self,courses_set):
+    @staticmethod
+    def count_lectures_per_course(courses_set):
         """
         Get the amount of lectures per course.
         :param courses_set: a list of course events
@@ -83,18 +82,20 @@ class ConstructTimeTable:
             lectures_amount[course.code] = course.course_hours
         return lectures_amount
 
-    def compute_amount_of_available_time_slots(self,course_event):
+    @staticmethod
+    def compute_amount_of_available_time_slots(course_event):
         """
         :param course_event: an instance of course event
         :return: the total number of available time slots for the given course
         """
         amount = 0
-        for i in range(gi.number_of_time_slots):
+        for i in range(gi.total_course_hours):
             if hc.course_event_fits_into_time_slot(course_event, i):
                 amount += 1
         return amount
 
-    def have_common_lecturers(self, course_event, course):
+    @staticmethod
+    def have_common_lecturers(course_event, course):
         """
         Checks if the two courses have a common lecturer.
         :param course_event: instance of CourseEvent
@@ -106,7 +107,8 @@ class ConstructTimeTable:
                 return True
         return False
 
-    def have_common_curricula(self, course_event, course):
+    @staticmethod
+    def have_common_curricula(course_event, course):
         """
         Checks if two courses have a common curriculum.
         :param course_event: instance of CourseEvent
@@ -170,7 +172,8 @@ class ConstructTimeTable:
         positions.sort(key=lambda tup: positions_ranking[tup[0]], reverse=False)
         return positions
 
-    def get_positions_ranking1(self, room, course_event):
+    @staticmethod
+    def get_positions_ranking1(room, course_event):
         """
         Rank1 is equal to the not home penalty, the smaller the better.
         :param room: an instance of ClassRoom
@@ -179,7 +182,8 @@ class ConstructTimeTable:
         """
         return sc.return_not_home_penalty(room, course_event)
 
-    def get_positions_ranking2(self, room, course_event):
+    @staticmethod
+    def get_positions_ranking2(room, course_event):
         """
         Rank2 indicates how many empty places there are left in a room.
         The smaller the better.

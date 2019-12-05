@@ -1,8 +1,9 @@
 import json
 import data
 import copy
-import global_variables as gv
+import math
 import general_info as gi
+
 
 path = "datasets/project.json"
 
@@ -105,36 +106,62 @@ for site in project_json['sites']:
         sites_dict[new_site.code] = new_site
 
 
-# TODO: Generalize events_type_1 and events_type_2
-events_type_1 = []  # All course events with courses that have more than or equal to 2 course hours per week
-courses_set = set()  # All courses with more than 2 course hours per week
-events_type_2 = []  # course events with courses that have less than 2 course hours per week
-empty_positions = []
-time_table = {}
-for course in courses_dict.values():
+def create_course_events(c):
     course_events = []
-    for i in range(int(course.course_hours)):
-        course_event = data.CourseEvent(course_code=course.code,
-                                        lecturers=course.lecturers,
-                                        student_amount=course.student_amount,
-                                        curricula=course.curricula,
+    for i in range(int(c.course_hours)):
+        course_event = data.CourseEvent(course_code=c.code,
+                                        lecturers=c.lecturers,
+                                        student_amount=c.student_amount,
+                                        curricula=c.curricula,
                                         event_number=i)
         course_events.append(course_event)
-    if len(course_events) >= 2:
-        events_type_1 += course_events
-        courses_set.add(course)
-        continue
-    events_type_2 += course_events
-    courses_set.add(course)
+    return course_events
 
-for room in class_rooms_dict.values():
-    for time_slot in range(number_of_time_slots):
-        room_fi_number = room.fi_number
-        empty_positions.append((room_fi_number, time_slot))
-        time_table[(room_fi_number, time_slot)] = None
 
-# TODO: this variable is for the testing phase only, needs to be changed
-events = events_type_1
+courses_set = set()
+
+
+def create_initial_events_lists():
+    events_type_1 = []
+    events_type_2 = []
+    events_type_3 = []
+    events_type_4 = []
+    for c in courses_dict.values():
+        courses_set.add(c)
+        course_hours = c.course_hours
+
+        if c.course_hours / 12 >= 1:
+            c.course_hours = math.ceil(course_hours/12)
+            events = create_course_events(c)
+            events_type_1 += events
+        elif c.course_hours / 6 >= 1:
+            c.course_hours = math.ceil(course_hours / 6)
+            events = create_course_events(c)
+            events_type_2 += events
+        elif c.course_hours / 3 >= 1:
+            c.course_hours = math.ceil(course_hours / 3)
+            events = create_course_events(c)
+            events_type_3 += events
+        elif c.course_hours / 1 >= 1:
+            c.course_hours = math.ceil(course_hours / 1)
+            events = create_course_events(c)
+            events_type_4 += events
+
+    return events_type_1, events_type_2, events_type_3, events_type_4
+
+
+def create_initial_timetable():
+    time_table = {}
+    empty_positions = []
+    for room in class_rooms_dict.values():
+        for time_slot in range(number_of_time_slots):
+            room_fi_number = room.fi_number
+            empty_positions.append((room_fi_number, time_slot))
+            time_table[(room_fi_number, time_slot)] = None
+    timetable = data.TimeTable(timetable=time_table,
+                               occupied_positions=[],
+                               empty_positions=empty_positions)
+    return timetable
 
 
 def init_general_info():
@@ -144,12 +171,13 @@ def init_general_info():
     """
     gi.academy_year = academy_year
     gi.semester = semester
-    gi.kilometer_penalty = kilometer_penalty
-    gi.late_hour_penalty = late_hours_penalty
-    gi.not_home_penalty = not_home_penalty
-    gi.min_amount_students = min_amount_student
-    gi.biggest_room_capacity = biggest_room_capacity
+    gi.kilometer_penalty = float(kilometer_penalty)
+    gi.late_hour_penalty = float(late_hours_penalty)
+    gi.not_home_penalty = float(not_home_penalty)
+    gi.min_amount_students = int(min_amount_student)
+    gi.biggest_room_capacity = int(biggest_room_capacity)
 
+    gi.courses_set = courses_set
     gi.courses_dict = courses_dict
     gi.lecturers_dict = lecturers_dict
     gi.curricula_dict = curricula_dict
