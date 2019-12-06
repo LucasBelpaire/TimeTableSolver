@@ -47,7 +47,7 @@ for course in project_json['vakken']:
             lecturers_dict[ugent_id] = new_lecturer
         else:
             new_lecturer = lecturers_dict[ugent_id]
-        lecturers.append(new_lecturer)
+        lecturers.append(ugent_id)
     curricula = []
     for curriculum in course['programmas']:
         curriculum_code = curriculum['code']
