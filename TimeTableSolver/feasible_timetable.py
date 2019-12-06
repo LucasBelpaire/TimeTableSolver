@@ -62,6 +62,7 @@ class FeasibleTimetable:
 
         if delta_e > 0:
             self.timetable = timetable_back_up
+            self.events = events_back_up
             return False
         # Success!
         self.last_distance = distance
@@ -77,6 +78,7 @@ class FeasibleTimetable:
         event = self.events.pop(0)
         # check if this event is not in the tabu list
         if event in tabu_list:
+            self.events.append(event)
             return False
 
         # get all available positions, not taking in account the room capacity
@@ -90,9 +92,11 @@ class FeasibleTimetable:
                     biggest_capacity = size
 
         if biggest_capacity == 0:
+            print("No room found, too big.")
             tabu_list.append(event)
+            self.events.append(event)
             return
-
+        print("Room found")
         # split the event
         course_code = event.course_code
         lecturers = event.lecturers
@@ -119,6 +123,7 @@ class FeasibleTimetable:
         self.events.insert(1, event_2)
 
         # check if it is possible to place extra events
+        print("events " + str(len(self.events)))
         events_to_remove = []
         for event in self.events:
             for position in self.timetable.empty_positions:
@@ -130,8 +135,10 @@ class FeasibleTimetable:
                     events_to_remove.append(event)
                     break
         # remove the events that got assigned
+        print("events to remove: " + str(len(events_to_remove)))
         for event in events_to_remove:
             self.events.remove(event)
+        print("events " + str(len(self.events)))
         return
 
     def occupied_unplaced_time_slot_swap(self, tabu_list):
