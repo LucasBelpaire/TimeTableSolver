@@ -65,7 +65,7 @@ class FeasibleTimetable:
             return False
         # Success!
         self.last_distance = distance
-        if self.last_distance < self.best_distance:
+        if self.last_distance <= self.best_distance:
             self.best_feasible_tt = copy.deepcopy(self.timetable)
             self.best_distance = distance
         return True
@@ -78,10 +78,25 @@ class FeasibleTimetable:
         # check if this event is not in the tabu list
         if event in tabu_list:
             return False
+
+        # get all available positions, not taking in account the room capacity
+        biggest_capacity = 0
+        for empty_position in self.timetable.empty_positions:
+            fi_number = empty_position[0]
+            time_slot = empty_position[1]
+            if hc.course_event_fits_into_time_slot(event, time_slot):
+                size = gi.class_rooms_dict[fi_number].room_capacity
+                if size > biggest_capacity:
+                    biggest_capacity = size
+
+        if biggest_capacity == 0:
+            tabu_list.append(event)
+            return
+
         # split the event
         course_code = event.course_code
         lecturers = event.lecturers
-        student_amount_1 = event.student_amount / 2
+        student_amount_1 = biggest_capacity
         student_amount_2 = event.student_amount - student_amount_1
         curricula = event.curricula
         event_number = event.event_number
@@ -100,9 +115,8 @@ class FeasibleTimetable:
         # add the new events to the tabu list
         tabu_list.append(event_1)
         tabu_list.append(event_2)
-        self.events.append(event_1)
-        self.events.append(event_2)
-        random.shuffle(self.events)
+        self.events.insert(0, event_1)
+        self.events.insert(1, event_2)
 
         # check if it is possible to place extra events
         events_to_remove = []
@@ -164,7 +178,7 @@ class FeasibleTimetable:
             return False
         # Success!
         self.last_distance = distance
-        if self.last_distance < self.best_distance:
+        if self.last_distance <= self.best_distance:
             self.best_feasible_tt = copy.deepcopy(self.timetable)
             self.best_distance = distance
         return True
@@ -185,18 +199,15 @@ class FeasibleTimetable:
             if len(tabu_split) == tabu_length:
                 tabu_split.pop(0)
             if len(tabu_unplaced_swap) == tabu_length_unplaced_swap:
-                tabu_split.pop(0)
+                tabu_unplaced_swap.pop(0)
 
             # randomly choose an action
             action = random.randrange(100)
             if action < 45:
-                print("swap")
                 self.position_swap(tabu_positions)
             if action < 90:
-                print("unplaced swap")
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
             if action >= 90:
-                print("split")
                 self.split_event(tabu_split)
         print(len(self.events))
         return self.best_distance, self.best_feasible_tt
