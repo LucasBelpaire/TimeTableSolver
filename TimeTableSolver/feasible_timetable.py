@@ -77,9 +77,9 @@ class FeasibleTimetable:
         # get the course with the most amount of students
         event = self.events.pop(0)
         # check if this event is not in the tabu list
-        if event in tabu_list:
+        while event in tabu_list:
             self.events.append(event)
-            return False
+            event = self.events.pop(0)
 
         # get all available positions, not taking in account the room capacity
         biggest_capacity = 0
@@ -134,6 +134,12 @@ class FeasibleTimetable:
         # remove the events that got assigned
         for event in events_to_remove:
             self.events.remove(event)
+
+        distance = len(self.events)
+        self.last_distance = distance
+        if self.last_distance <= self.best_distance:
+            self.best_feasible_tt = copy.deepcopy(self.timetable)
+            self.best_distance = distance
         return
 
     def occupied_unplaced_time_slot_swap(self, tabu_list):
@@ -198,24 +204,24 @@ class FeasibleTimetable:
         while len(self.events) > 0 and time.clock() < starting_time + max_time:
             print(len(self.events))
             # if tabu list is full, remove the oldest entry
-            if len(tabu_positions) == tabu_length:
+            if len(tabu_positions) == 300:
                 tabu_positions.pop(0)
-            if len(tabu_split) == tabu_length:
+            if len(tabu_split) == 20:
                 tabu_split.pop(0)
-            if len(tabu_unplaced_swap) == tabu_length_unplaced_swap:
+            if len(tabu_unplaced_swap) == 20:
                 tabu_unplaced_swap.pop(0)
 
             # randomly choose an action
             action = random.randrange(100)
-            if action < 40:
+            if action < 33:
                 print("swap")
                 self.position_swap(tabu_positions)
                 continue
-            if action < 80:
+            if action < 66:
                 print("occupied_swap")
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
                 continue
-            if action >= 80:
+            if action >= 66:
                 print("split")
                 self.split_event(tabu_split)
         print(len(self.events))
