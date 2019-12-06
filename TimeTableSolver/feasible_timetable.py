@@ -85,7 +85,7 @@ class FeasibleTimetable:
             fi_number = empty_position[0]
             time_slot = empty_position[1]
             if hc.course_event_fits_into_time_slot(event, time_slot):
-                size = gi.class_rooms_dict[fi_number].room_capacity
+                size = gi.class_rooms_dict[fi_number].capacity
                 if size > biggest_capacity:
                     biggest_capacity = size
 
