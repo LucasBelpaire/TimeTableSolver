@@ -52,11 +52,11 @@ def main():
     # best_distance2b, timetable2b = ftt2b.tabu_search()
 
     # Start the second phase of the feasibility process: tabu search
-    print("Starting improving phase. " + str(time.perf_counter() - start_time))
-    improve = improveTimeTable.ImproveTimeTable(timetable)
-    total_penalty = improve.best_cost
-    print("total penalty: " + str(total_penalty))
-    print("Completed improving phase.  " + str(time.perf_counter() - start_time))
+    # print("Starting improving phase. " + str(time.perf_counter() - start_time))
+    # improve = improveTimeTable.ImproveTimeTable(timetable)
+    # total_penalty = improve.best_cost
+    # print("total penalty: " + str(total_penalty))
+    # print("Completed improving phase.  " + str(time.perf_counter() - start_time))
 
     # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
