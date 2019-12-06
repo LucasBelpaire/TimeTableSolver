@@ -5,6 +5,7 @@ import generate_output as go
 import time
 import copy
 import feasible_timetable
+import improveTimeTable
 
 
 def main():
@@ -49,6 +50,13 @@ def main():
     #                                              timetable2b)
     # best_distance2a, timetable2a = ftt2a.tabu_search()
     # best_distance2b, timetable2b = ftt2b.tabu_search()
+
+    # Start the second phase of the feasibility process: tabu search
+    print("Starting improving phase. " + str(time.perf_counter() - start_time))
+    improve = improveTimeTable.ImproveTimeTable(timetable)
+    total_penalty = improve.best_cost
+    print("total penalty: " + str(total_penalty))
+    print("Completed improving phase.  " + str(time.perf_counter() - start_time))
 
     # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
