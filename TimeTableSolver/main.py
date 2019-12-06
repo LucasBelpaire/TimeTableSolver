@@ -8,6 +8,7 @@ import feasible_timetable
 import improveTimeTable
 
 
+
 def main():
     start_time = time.perf_counter()
     # Initialize all variables needed to create a time table
@@ -28,11 +29,11 @@ def main():
     print("Initial construction of timetable finished.  " + str(time.perf_counter() - start_time))
 
     # Start the second phase of the feasibility process: tabu search
-    print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
-    ftt = feasible_timetable.FeasibleTimetable(events_1,
-                                               timetable)
-    best_distance, timetable = ftt.tabu_search()
-    print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
+    # print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
+    #ftt = feasible_timetable.FeasibleTimetable(events_1,
+    #                                            timetable)
+    #best_distance, timetable = ftt.tabu_search()
+    #print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
     # timetable_2 = copy.deepcopy(timetable)
     # construct_timetable_2a = ctt.ConstructTimeTable(events_list=events_2[len(events_2):],
     #                                                 courses_set=courses_set,
@@ -54,8 +55,12 @@ def main():
     # Start the second phase of the feasibility process: tabu search
     print("Starting improving phase. " + str(time.perf_counter() - start_time))
     improve = improveTimeTable.ImproveTimeTable(timetable)
-    total_penalty = improve.best_cost
-    print("total penalty: " + str(total_penalty))
+
+
+
+    improve.switch_time_slots_for_late_hour_penalty()
+
+    #print("total penalty: " + str(total_penalty))
     print("Completed improving phase.  " + str(time.perf_counter() - start_time))
 
     # Start generating the output file

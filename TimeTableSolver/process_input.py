@@ -122,10 +122,12 @@ courses_set = set()
 
 
 def create_initial_events_lists():
+    print("test init events list")
     events_type_1 = []
     events_type_2 = []
     events_type_3 = []
     events_type_4 = []
+
     for c in courses_dict.values():
         courses_set.add(c)
         course_hours = c.course_hours
