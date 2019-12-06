@@ -3,6 +3,7 @@ import process_input
 import general_info as gi
 import generate_output as go
 import time
+import pickle
 import copy
 import feasible_timetable
 import improveTimeTable
@@ -22,10 +23,17 @@ def main():
 
     # Start the first phase of the feasibility process: construction phase
     print("Starting initial construction of timetable.  " + str(time.perf_counter() - start_time))
-    construct_timetable = ctt.ConstructTimeTable(events_list=events_1,
-                                                 courses_set=courses_set,
-                                                 timetable=timetable)
-    events_1, timetable = construct_timetable.construct()
+    # construct_timetable = ctt.ConstructTimeTable(events_list=events_1,
+    #                                              courses_set=courses_set,
+    #                                              timetable=timetable)
+    # events_1, timetable = construct_timetable.construct()
+    # load in variables using pickle, for testing only!
+    f1 = open('timetable.pckl', 'rb')
+    timetable = pickle.load(f1)
+    f1.close()
+    f2 = open('events.pckl', 'rb')
+    events_1 = pickle.load(f2)
+    f2.close()
     print("Initial construction of timetable finished.  " + str(time.perf_counter() - start_time))
 
     # Start the second phase of the feasibility process: tabu search
@@ -53,15 +61,11 @@ def main():
     # best_distance2b, timetable2b = ftt2b.tabu_search()
 
     # Start the second phase of the feasibility process: tabu search
-    print("Starting improving phase. " + str(time.perf_counter() - start_time))
-    improve = improveTimeTable.ImproveTimeTable(timetable)
-
-
-
-    improve.switch_time_slots_for_late_hour_penalty()
-
-    #print("total penalty: " + str(total_penalty))
-    print("Completed improving phase.  " + str(time.perf_counter() - start_time))
+    # print("Starting improving phase. " + str(time.perf_counter() - start_time))
+    # improve = improveTimeTable.ImproveTimeTable(timetable)
+    # total_penalty = improve.best_cost
+    # print("total penalty: " + str(total_penalty))
+    # print("Completed improving phase.  " + str(time.perf_counter() - start_time))
 
     # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))

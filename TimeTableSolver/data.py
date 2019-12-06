@@ -133,7 +133,8 @@ class TimeTable:
 
         # get a lecturer
         assigned_lecturer = None
-        for lecturer in course_event.lecturers:
+        for ugent_id in course_event.lecturers:
+            lecturer = gi.lecturers_dict[ugent_id]
             if not hc.lecturer_is_occupied_in_time_slot(lecturer, time_slot):
                 assigned_lecturer = lecturer
                 break
