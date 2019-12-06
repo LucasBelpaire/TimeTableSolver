@@ -1,6 +1,7 @@
 """
     This module holds all hard constraints.
 """
+import general_info as gi
 
 
 def lecturer_is_occupied_in_time_slot(lecturer, time_slot):
@@ -23,7 +24,8 @@ def lecturers_are_occupied_in_time_slot(course_event, time_slot):
     if course_event is None:
         return True
 
-    for lecturer in course_event.lecturers:
+    for ugent_id in course_event.lecturers:
+        lecturer = gi.lecturers_dict[ugent_id]
         if not lecturer_is_occupied_in_time_slot(lecturer, time_slot):
             return False
 
