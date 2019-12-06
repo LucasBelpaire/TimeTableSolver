@@ -92,11 +92,9 @@ class FeasibleTimetable:
                     biggest_capacity = size
 
         if biggest_capacity == 0:
-            print("No room found, too big.")
             tabu_list.append(event)
             self.events.append(event)
             return
-        print("Room found")
         # split the event
         course_code = event.course_code
         lecturers = event.lecturers
@@ -123,7 +121,6 @@ class FeasibleTimetable:
         self.events.insert(1, event_2)
 
         # check if it is possible to place extra events
-        print("events " + str(len(self.events)))
         events_to_remove = []
         for event in self.events:
             for position in self.timetable.empty_positions:
@@ -135,10 +132,8 @@ class FeasibleTimetable:
                     events_to_remove.append(event)
                     break
         # remove the events that got assigned
-        print("events to remove: " + str(len(events_to_remove)))
         for event in events_to_remove:
             self.events.remove(event)
-        print("events " + str(len(self.events)))
         return
 
     def occupied_unplaced_time_slot_swap(self, tabu_list):
@@ -182,6 +177,7 @@ class FeasibleTimetable:
 
         if delta_e > 0:
             self.timetable = timetable_back_up
+            self.events = events_back_up
             return False
         # Success!
         self.last_distance = distance
@@ -211,10 +207,14 @@ class FeasibleTimetable:
             # randomly choose an action
             action = random.randrange(100)
             if action < 45:
+                print("swap")
                 self.position_swap(tabu_positions)
             if action < 90:
+                print("occupied_swap")
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
             if action >= 90:
+                print("split")
                 self.split_event(tabu_split)
+            print(len(self.events))
         print(len(self.events))
         return self.best_distance, self.best_feasible_tt
