@@ -113,8 +113,8 @@ def swap_occupied_for_unplaced_in_time_slot(timetable, events, time_slot):
     for occupied_position in timetable.occupied_positions:
         if occupied_position[1] != time_slot:
             continue
-        event_back_up = timetable.timetable[occupied_position]
-        timetable.remove_course_from_position(occupied_position)
+        event_back_up = timetable.remove_course_from_position(occupied_position)
+        timetable.assign_course_to_position(event_back_up, occupied_position)
         room = gi.class_rooms_dict[occupied_position[0]]
         time_slot = occupied_position[1]
         found_replacement = False
