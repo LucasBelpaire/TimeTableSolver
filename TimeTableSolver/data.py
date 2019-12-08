@@ -22,12 +22,12 @@ class Lecturer:
         self.ugent_id = ugent_id
         self.first_name = first_name
         self.last_name = last_name
-        self.occupied_time_slots = []
+        self.occupied_time_slots = set()
 
     def add_occupied_time_slot(self, time_slot_number):
         if time_slot_number in self.occupied_time_slots:
             return False
-        self.occupied_time_slots.append(time_slot_number)
+        self.occupied_time_slots.add(time_slot_number)
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
@@ -46,12 +46,12 @@ class Curriculum:
         self.code = code
         self.mt1 = mt1
         self.home_site = home_site
-        self.occupied_time_slots = []
+        self.occupied_time_slots = set()
 
     def add_occupied_time_slot(self, time_slot_number):
         if time_slot_number in self.occupied_time_slots:
             return False
-        self.occupied_time_slots.append(time_slot_number)
+        self.occupied_time_slots.add(time_slot_number)
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
