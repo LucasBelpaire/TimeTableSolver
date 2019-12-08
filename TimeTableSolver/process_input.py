@@ -106,9 +106,9 @@ for site in project_json['sites']:
         sites_dict[new_site.code] = new_site
 
 
-def create_course_events(c):
+def create_course_events(c, course_hours):
     course_events = []
-    for i in range(int(c.course_hours)):
+    for i in range(int(course_hours)):
         course_event = data.CourseEvent(course_code=c.code,
                                         lecturers=c.lecturers,
                                         student_amount=c.student_amount,
@@ -131,20 +131,52 @@ def create_initial_events_lists():
         course_hours = c.course_hours
 
         if c.course_hours / 12 >= 1:
-            c.course_hours = math.ceil(course_hours/12)
-            events = create_course_events(c)
+            c.course_hours = course_hours/12
+            additional_hours = course_hours % 12
+            events = create_course_events(c, c.course_hours)
             events_type_1 += events
+            if additional_hours != 0:
+                # spread course over 6 weeks
+                type_2_hours = additional_hours/6
+                additional_hours = additional_hours % 6
+                events = create_course_events(c, type_2_hours)
+                events_type_2 += events
+                if additional_hours != 0:
+                    type_3_hours = additional_hours/3
+                    additional_hours = additional_hours % 3
+                    events = create_course_events(c, type_3_hours)
+                    events_type_3 += events
+                    if additional_hours != 0:
+                        type_4_hours = math.ceil(additional_hours)
+                        events = create_course_events(c, type_4_hours)
+                        events_type_4 += events
         elif c.course_hours / 6 >= 1:
-            c.course_hours = math.ceil(course_hours / 6)
-            events = create_course_events(c)
+            c.course_hours = course_hours / 6
+            additional_hours = course_hours % 6
+            events = create_course_events(c, c.course_hours)
             events_type_2 += events
+            if additional_hours != 0:
+                type_3_hours = additional_hours / 3
+                additional_hours = additional_hours % 3
+                events = create_course_events(c, type_3_hours)
+                events_type_3 += events
+                if additional_hours != 0:
+                    type_4_hours = math.ceil(additional_hours)
+                    events = create_course_events(c, type_4_hours)
+                    events_type_4 += events
+
         elif c.course_hours / 3 >= 1:
-            c.course_hours = math.ceil(course_hours / 3)
-            events = create_course_events(c)
+            c.course_hours = course_hours / 3
+            additional_hours = course_hours % 3
+            events = create_course_events(c, c.course_hours)
             events_type_3 += events
+            if additional_hours != 0:
+                type_4_hours = math.ceil(additional_hours)
+                events = create_course_events(c, type_4_hours)
+                events_type_4 += events
         elif c.course_hours / 1 >= 1:
-            c.course_hours = math.ceil(course_hours / 1)
-            events = create_course_events(c)
+            c.course_hours = math.ceil(course_hours)
+            events = create_course_events(c, c.course_hours)
             events_type_4 += events
 
     return events_type_1, events_type_2, events_type_3, events_type_4
