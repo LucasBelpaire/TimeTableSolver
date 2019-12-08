@@ -130,6 +130,8 @@ class ConstructTimeTable:
         :return: the rank of the given course
         """
         total_number_of_available_time_slots = self.compute_amount_of_available_time_slots(course_event)
+        if amount_of_events <= 0:
+            amount_of_events = 1
         rank = total_number_of_available_time_slots / math.sqrt(amount_of_events)
         return rank
 
