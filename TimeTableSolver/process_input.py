@@ -60,7 +60,7 @@ for course in project_json['vakken']:
             curricula_dict[curriculum_code] = new_curriculum
         else:
             new_curriculum = curricula_dict[curriculum_code]
-        curricula.append(new_curriculum)
+        curricula.append(new_curriculum.code)
     new_course = data.Course(code=code,
                              name=name,
                              student_amount=student_amounts,
@@ -192,7 +192,8 @@ def create_initial_timetable():
             time_table[(room_fi_number, time_slot)] = None
     timetable = data.TimeTable(timetable=time_table,
                                occupied_positions=[],
-                               empty_positions=empty_positions)
+                               empty_positions=empty_positions,
+                               offset=0)
     return timetable
 
 

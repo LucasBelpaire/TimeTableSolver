@@ -5,6 +5,7 @@ import general_info as gi
 from haversine import haversine
 import math
 
+
 def return_not_home_penalty(room, course_event):
     """
     This function calculates the not_home penalty for a given room and course.
@@ -17,7 +18,8 @@ def return_not_home_penalty(room, course_event):
     curricula_of_courses = course_event.curricula
 
     total_penalty = 0
-    for curriculum in curricula_of_courses:
+    for curriculum_code in curricula_of_courses:
+        curriculum = gi.curricula_dict[curriculum_code]
         if curriculum.home_site == room.site_id:
             continue
 

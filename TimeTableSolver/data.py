@@ -103,10 +103,11 @@ class CourseEvent:
 
 class TimeTable:
 
-    def __init__(self, timetable, occupied_positions, empty_positions):
+    def __init__(self, timetable, occupied_positions, empty_positions, offset):
         self.timetable = timetable
         self.occupied_positions = occupied_positions
         self.empty_positions = empty_positions
+        self.offset = offset
 
     def assign_course_to_position(self, course_event, position):
         """
@@ -127,7 +128,8 @@ class TimeTable:
         room_fi_number = position[0]
         time_slot = position[1]
 
-        for curriculum in course.curricula:
+        for curriculum_code in course.curricula:
+            curriculum = gi.curricula_dict[curriculum_code]
             # adding the time_slot to the list of occupied time_slots
             curriculum.add_occupied_time_slot(time_slot)
 
@@ -167,7 +169,8 @@ class TimeTable:
             course.course_hours += 1
 
             # remove the time_slot from the occupied time_sot list from every curriculum
-            for curriculum in course.curricula:
+            for curriculum_code in course.curricula:
+                curriculum = gi.curricula_dict[curriculum_code]
                 curriculum.remove_occupied_time_slot(time_slot)
 
             ugent_id = course_event.assigned_lecturer
@@ -176,5 +179,11 @@ class TimeTable:
             course_event.remove_assigned_lecturer()
 
             return course_event
-
         return False
+
+    def set_offset(self, offset):
+        """
+        This function will change the new offset and make sure that all relevant values get updated.
+        """
+        previous_offset = self.offset
+        self.offset = offset
