@@ -31,11 +31,7 @@ class Lecturer:
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
-        try:
-            self.occupied_time_slots.remove(time_slot_number)
-            return True
-        except ValueError:
-            return False
+        self.occupied_time_slots.discard(time_slot_number)
 
     def contains_time_slot(self, time_slot_number):
         return time_slot_number in self.occupied_time_slots
@@ -55,11 +51,7 @@ class Curriculum:
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
-        try:
-            self.occupied_time_slots.remove(time_slot_number)
-            return True
-        except ValueError:
-            return False
+        self.occupied_time_slots.discard(time_slot_number)
 
     def contains_time_slot(self, time_slot_number):
         return time_slot_number in self.occupied_time_slots
@@ -126,7 +118,7 @@ class TimeTable:
         self.timetable[position] = course_event
         course = gi.courses_dict[course_event.course_code]
         room_fi_number = position[0]
-        time_slot = position[1]
+        time_slot = position[1] + 40 * self.offset
 
         for curriculum_code in course.curricula:
             curriculum = gi.curricula_dict[curriculum_code]
@@ -159,7 +151,7 @@ class TimeTable:
         :return: True if the removal is successful, False otherwise
         """
         fi_number = position[0]
-        time_slot = position[1]
+        time_slot = position[1] + 40 * self.offset
         if self.timetable[position] is not None:
             course_event = self.timetable[position]
             self.timetable[position] = None
@@ -181,9 +173,28 @@ class TimeTable:
             return course_event
         return False
 
-    def set_offset(self, offset):
+    def update_offset(self, offset):
         """
         This function will change the new offset and make sure that all relevant values get updated.
+        Warning! only use this function when copying a timetable to use as the base timetable for the new week.
         """
         previous_offset = self.offset
         self.offset = offset
+
+        # iterate over all non None values in the dictionary
+        # update all occupied time_slot sets
+        for course_event in self.timetable.values():
+            if course_event is not None:
+                assigned_lecturer = gi.lecturers_dict[course_event.assigned_lecturer]
+                # update occupied time slots for the lecturer
+                new_time_slots = set()
+                for occupied_time_slot in assigned_lecturer.occupied_time_slots:
+                    new_time_slots.add(occupied_time_slot % 40 + offset*40)
+                assigned_lecturer.occupied_time_slots.union(new_time_slots)
+                # update occupied time slots for the curricula
+                for curriculum_code in course_event.curricula:
+                    curriculum = gi.curricula_dict[curriculum_code]
+                    new_time_slots = set()
+                    for occupied_time_slot in curriculum.occupied_time_slots:
+                        new_time_slots.add(occupied_time_slot % 40 + offset*40)
+                    curriculum.occupied_time_slots.union(new_time_slots)
