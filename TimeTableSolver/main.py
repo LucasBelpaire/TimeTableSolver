@@ -1,14 +1,8 @@
-import construct_timetable as ctt
 import process_input
 import general_info as gi
 import generate_output as go
 import time
 import timetable_builder as tb
-import pickle
-import copy
-import feasible_timetable
-import improveTimeTable
-
 
 
 def main():
