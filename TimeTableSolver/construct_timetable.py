@@ -27,8 +27,8 @@ class ConstructTimeTable:
             available_positions = []
             for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
-                fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
-                    course_event, room)
+                fits = hc.course_event_fits_into_time_slot(course_event, time_slot + self.timetable.offset*40) \
+                       and hc.room_capacity_constraint(course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
             # if no available positions were found, the event gets added to unplaced_events
