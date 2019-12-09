@@ -7,7 +7,7 @@ def generate_output_from_time_table(list_of_dicts):
     """
     This function will convert the end solution time table to a correct json file
     The JSON file will contain all reservation for a room during the semester
-    :param list_of_dicts: list of tuples: (dictionary, weeks)
+    :param list_of_dicts: list of tuples: (timetable, weeks)
     :return: we return true if successful
     """
     room_reservation_dict = []
