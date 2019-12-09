@@ -3,7 +3,6 @@ import feasible_timetable as ft
 import copy
 import time
 import random
-import pickle
 
 
 class TimeTableBuilder:
@@ -28,18 +27,6 @@ class TimeTableBuilder:
                                                     timetable=self.timetable)
         events_1, timetable = construct_timetable.construct()
         print("Initial construction of timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
-
-        with open('events.pckl', 'wb') as f:
-            pickle.dump(events_1, f)
-        with open('timetable.pckl', 'wb') as f:
-            pickle.dump(timetable, f)
-
-        # f1 = open('timetable.pckl', 'rb')
-        # timetable = pickle.load(f1)
-        # f1.close()
-        # f2 = open('events.pckl', 'rb')
-        # events_1 = pickle.load(f2)
-        # f2.close()
         print("Starting tabu search on timetable type 1.  " + str(time.perf_counter() - self.start_time))
         feasible_timetable = ft.FeasibleTimetable(events=events_1,
                                                   timetable=timetable)
