@@ -3,6 +3,7 @@ import process_input
 import general_info as gi
 import generate_output as go
 import time
+import timetable_builder as tb
 import pickle
 import copy
 import feasible_timetable
@@ -17,61 +18,21 @@ def main():
     process_input.init_general_info()
     timetable = process_input.create_initial_timetable()
     events_1, events_2, events_3, events_4 = process_input.create_initial_events_lists()
-    print(len(events_1))
     courses_set = gi.courses_set
     print("Processing input completed.  " + str(time.perf_counter() - start_time))
 
-    # Start the first phase of the feasibility process: construction phase
-    print("Starting initial construction of timetable.  " + str(time.perf_counter() - start_time))
-    # construct_timetable = ctt.ConstructTimeTable(events_list=events_1,
-    #                                              courses_set=courses_set,
-    #                                              timetable=timetable)
-    # events_1, timetable = construct_timetable.construct()
-    # load in variables using pickle, for testing only!
-    f1 = open('timetable.pckl', 'rb')
-    timetable = pickle.load(f1)
-    f1.close()
-    f2 = open('events.pckl', 'rb')
-    events_1 = pickle.load(f2)
-    f2.close()
-    print("Initial construction of timetable finished.  " + str(time.perf_counter() - start_time))
-
-    # Start the second phase of the feasibility process: tabu search
-    # print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
-    #ftt = feasible_timetable.FeasibleTimetable(events_1,
-    #                                            timetable)
-    #best_distance, timetable = ftt.tabu_search()
-    #print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
-    # timetable_2 = copy.deepcopy(timetable)
-    # construct_timetable_2a = ctt.ConstructTimeTable(events_list=events_2[len(events_2):],
-    #                                                 courses_set=courses_set,
-    #                                                 timetable=timetable)
-    #
-    # construct_timetable_2b = ctt.ConstructTimeTable(events_list=events_2[:len(events_2)],
-    #                                                 courses_set=courses_set,
-    #                                                 timetable=timetable_2)
-    # events_2a, timetable2a = construct_timetable_2a.construct()
-    # events_2b, timetable2b = construct_timetable_2b.construct()
-    #
-    # ftt2a = feasible_timetable.FeasibleTimetable(events_2a,
-    #                                              timetable2a)
-    # ftt2b = feasible_timetable.FeasibleTimetable(events_2b,
-    #                                              timetable2b)
-    # best_distance2a, timetable2a = ftt2a.tabu_search()
-    # best_distance2b, timetable2b = ftt2b.tabu_search()
-
-    # Start the second phase of the feasibility process: tabu search
-    print("Starting improving phase. " + str(time.perf_counter() - start_time))
-    improve = improveTimeTable.ImproveTimeTable(timetable)
-    improve.switch_time_slots_for_late_hour_penalty()
-    #total_penalty = improve.best_cost
-    #print("total penalty: " + str(total_penalty))
-    print("Completed improving phase.  " + str(time.perf_counter() - start_time))
-
+    # Start constructing timetable
+    timetable_builder = tb.TimeTableBuilder(timetable=timetable,
+                                            events_1=events_1,
+                                            events_2=events_2,
+                                            events_3=events_3,
+                                            events_4=events_4,
+                                            courses_set=courses_set,
+                                            start_time=start_time)
+    timetable_complete = timetable_builder.build_timetable()
     # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
-    # go.generate_output_from_time_table( [(timetable2a, [1, 2, 3, 4, 5, 6]), (timetable2b, [7, 8, 9, 10, 11, 12])])
-    go.generate_output_from_time_table([(timetable, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])])
+    go.generate_output_from_time_table(timetable_complete)
     print("Generating output completed.  " + str(time.perf_counter() - start_time))
 
 

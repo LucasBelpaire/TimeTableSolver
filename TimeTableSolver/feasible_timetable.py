@@ -48,7 +48,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break
@@ -77,16 +77,19 @@ class FeasibleTimetable:
         # get the course with the most amount of students
         event = self.events.pop(0)
         # check if this event is not in the tabu list
-        while event in tabu_list:
+        max_events = len(self.events)
+        index = 0
+        while event in tabu_list and index < max_events:
             self.events.append(event)
             event = self.events.pop(0)
+            index += 1
 
         # get all available positions, not taking in account the room capacity
         biggest_capacity = 0
         for empty_position in self.timetable.empty_positions:
             fi_number = empty_position[0]
             time_slot = empty_position[1]
-            if hc.course_event_fits_into_time_slot(event, time_slot):
+            if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40):
                 size = gi.class_rooms_dict[fi_number].capacity
                 if size > biggest_capacity:
                     biggest_capacity = size
@@ -127,7 +130,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break
@@ -169,7 +172,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break
@@ -194,15 +197,11 @@ class FeasibleTimetable:
 
     def tabu_search(self):
         starting_time = time.clock()
-        max_time = 300
-        tabu_length = 300
-        tabu_length_unplaced_swap = 10
+        max_time = 20
         tabu_positions = []
         tabu_split = []
         tabu_unplaced_swap = []
-        print(len(self.events))
         while len(self.events) > 0 and time.clock() < starting_time + max_time:
-            print(len(self.events))
             # if tabu list is full, remove the oldest entry
             if len(tabu_positions) == 300:
                 tabu_positions.pop(0)
@@ -213,16 +212,12 @@ class FeasibleTimetable:
 
             # randomly choose an action
             action = random.randrange(100)
-            if action < 33:
-                print("swap")
+            if action < 16:
                 self.position_swap(tabu_positions)
                 continue
             if action < 66:
-                print("occupied_swap")
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
                 continue
             if action >= 66:
-                print("split")
                 self.split_event(tabu_split)
-        print(len(self.events))
-        return self.best_distance, self.best_feasible_tt
+        return self.events, self.best_feasible_tt

@@ -22,20 +22,16 @@ class Lecturer:
         self.ugent_id = ugent_id
         self.first_name = first_name
         self.last_name = last_name
-        self.occupied_time_slots = []
+        self.occupied_time_slots = set()
 
     def add_occupied_time_slot(self, time_slot_number):
         if time_slot_number in self.occupied_time_slots:
             return False
-        self.occupied_time_slots.append(time_slot_number)
+        self.occupied_time_slots.add(time_slot_number)
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
-        try:
-            self.occupied_time_slots.remove(time_slot_number)
-            return True
-        except ValueError:
-            return False
+        self.occupied_time_slots.discard(time_slot_number)
 
     def contains_time_slot(self, time_slot_number):
         return time_slot_number in self.occupied_time_slots
@@ -46,20 +42,16 @@ class Curriculum:
         self.code = code
         self.mt1 = mt1
         self.home_site = home_site
-        self.occupied_time_slots = []
+        self.occupied_time_slots = set()
 
     def add_occupied_time_slot(self, time_slot_number):
         if time_slot_number in self.occupied_time_slots:
             return False
-        self.occupied_time_slots.append(time_slot_number)
+        self.occupied_time_slots.add(time_slot_number)
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
-        try:
-            self.occupied_time_slots.remove(time_slot_number)
-            return True
-        except ValueError:
-            return False
+        self.occupied_time_slots.discard(time_slot_number)
 
     def contains_time_slot(self, time_slot_number):
         return time_slot_number in self.occupied_time_slots
@@ -103,10 +95,11 @@ class CourseEvent:
 
 class TimeTable:
 
-    def __init__(self, timetable, occupied_positions, empty_positions):
+    def __init__(self, timetable, occupied_positions, empty_positions, offset):
         self.timetable = timetable
         self.occupied_positions = occupied_positions
         self.empty_positions = empty_positions
+        self.offset = offset
 
     def assign_course_to_position(self, course_event, position):
         """
@@ -125,9 +118,10 @@ class TimeTable:
         self.timetable[position] = course_event
         course = gi.courses_dict[course_event.course_code]
         room_fi_number = position[0]
-        time_slot = position[1]
+        time_slot = position[1] + 40 * self.offset
 
-        for curriculum in course.curricula:
+        for curriculum_code in course.curricula:
+            curriculum = gi.curricula_dict[curriculum_code]
             # adding the time_slot to the list of occupied time_slots
             curriculum.add_occupied_time_slot(time_slot)
 
@@ -157,7 +151,7 @@ class TimeTable:
         :return: True if the removal is successful, False otherwise
         """
         fi_number = position[0]
-        time_slot = position[1]
+        time_slot = position[1] + 40 * self.offset
         if self.timetable[position] is not None:
             course_event = self.timetable[position]
             self.timetable[position] = None
@@ -167,7 +161,8 @@ class TimeTable:
             course.course_hours += 1
 
             # remove the time_slot from the occupied time_sot list from every curriculum
-            for curriculum in course.curricula:
+            for curriculum_code in course.curricula:
+                curriculum = gi.curricula_dict[curriculum_code]
                 curriculum.remove_occupied_time_slot(time_slot)
 
             ugent_id = course_event.assigned_lecturer
@@ -176,5 +171,30 @@ class TimeTable:
             course_event.remove_assigned_lecturer()
 
             return course_event
-
         return False
+
+    def update_offset(self, offset):
+        """
+        This function will change the new offset and make sure that all relevant values get updated.
+        Warning! only use this function when copying a timetable to use as the base timetable for the new week.
+        """
+        previous_offset = self.offset
+        self.offset = offset
+
+        # iterate over all non None values in the dictionary
+        # update all occupied time_slot sets
+        for course_event in self.timetable.values():
+            if course_event is not None:
+                assigned_lecturer = gi.lecturers_dict[course_event.assigned_lecturer]
+                # update occupied time slots for the lecturer
+                new_time_slots = set()
+                for occupied_time_slot in assigned_lecturer.occupied_time_slots:
+                    new_time_slots.add(occupied_time_slot % 40 + offset*40)
+                assigned_lecturer.occupied_time_slots.union(new_time_slots)
+                # update occupied time slots for the curricula
+                for curriculum_code in course_event.curricula:
+                    curriculum = gi.curricula_dict[curriculum_code]
+                    new_time_slots = set()
+                    for occupied_time_slot in curriculum.occupied_time_slots:
+                        new_time_slots.add(occupied_time_slot % 40 + offset*40)
+                    curriculum.occupied_time_slots.union(new_time_slots)

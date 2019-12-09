@@ -27,8 +27,8 @@ class ConstructTimeTable:
             available_positions = []
             for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
-                fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
-                    course_event, room)
+                fits = hc.course_event_fits_into_time_slot(course_event, time_slot + self.timetable.offset*40) \
+                       and hc.room_capacity_constraint(course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
             # if no available positions were found, the event gets added to unplaced_events
@@ -130,6 +130,8 @@ class ConstructTimeTable:
         :return: the rank of the given course
         """
         total_number_of_available_time_slots = self.compute_amount_of_available_time_slots(course_event)
+        if amount_of_events <= 0:
+            amount_of_events = 1
         rank = total_number_of_available_time_slots / math.sqrt(amount_of_events)
         return rank
 
