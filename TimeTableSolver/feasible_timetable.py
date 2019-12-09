@@ -198,14 +198,10 @@ class FeasibleTimetable:
     def tabu_search(self):
         starting_time = time.clock()
         max_time = 20
-        tabu_length = 300
-        tabu_length_unplaced_swap = 10
         tabu_positions = []
         tabu_split = []
         tabu_unplaced_swap = []
-        print(len(self.events))
         while len(self.events) > 0 and time.clock() < starting_time + max_time:
-            print(len(self.events))
             # if tabu list is full, remove the oldest entry
             if len(tabu_positions) == 300:
                 tabu_positions.pop(0)
@@ -217,18 +213,11 @@ class FeasibleTimetable:
             # randomly choose an action
             action = random.randrange(100)
             if action < 16:
-                print("swap")
                 self.position_swap(tabu_positions)
-                print("swap finished")
                 continue
             if action < 66:
-                print("occupied_swap")
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
-                print("occupied_swap finished")
                 continue
             if action >= 66:
-                print("split")
                 self.split_event(tabu_split)
-                print("split finished")
-        print(len(self.events))
         return self.events, self.best_feasible_tt
