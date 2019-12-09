@@ -253,6 +253,7 @@ class TimeTableBuilder:
         print("unplaced: "+str(len(unplaced_events)))
         timetable_13 = pi.create_initial_timetable()
         timetable.update_offset(12)
+        random.shuffle(unplaced_events)
         ct_13 = ct.ConstructTimeTable(events_list=unplaced_events,
                                       courses_set=self.courses_set,
                                       timetable=timetable_13)
