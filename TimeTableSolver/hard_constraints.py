@@ -42,12 +42,12 @@ def curriculum_is_occupied_in_time_slot(course_event, time_slot):
     if course_event is None:
         return False
 
+    available = False
     for curriculum_code in course_event.curricula:
         curriculum = gi.curricula_dict[curriculum_code]
-        if not curriculum.contains_time_slot(time_slot):
-            return False
-
-    return True
+        if curriculum.contains_time_slot(time_slot):
+            available = True
+    return available
 
 
 def room_capacity_constraint(course_event, room):
