@@ -23,10 +23,11 @@ def main():
 
     # Start the first phase of the feasibility process: construction phase
     print("Starting initial construction of timetable.  " + str(time.perf_counter() - start_time))
-    # construct_timetable = ctt.ConstructTimeTable(events_list=events_1,
-    #                                              courses_set=courses_set,
-    #                                              timetable=timetable)
-    # events_1, timetable = construct_timetable.construct()
+    #construct_timetable = ctt.ConstructTimeTable(events_list=events_1,
+    #                                             courses_set=courses_set,
+    #                                             timetable=timetable)
+    #events_1, timetable = construct_timetable.construct()
+    #print("len unplaced evetns: " + str(len(events_1)))
     # load in variables using pickle, for testing only!
     f1 = open('timetable.pckl', 'rb')
     timetable = pickle.load(f1)
@@ -37,10 +38,10 @@ def main():
     print("Initial construction of timetable finished.  " + str(time.perf_counter() - start_time))
 
     # Start the second phase of the feasibility process: tabu search
-    # print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
-    #ftt = feasible_timetable.FeasibleTimetable(events_1,
-    #                                            timetable)
-    #best_distance, timetable = ftt.tabu_search()
+    #print("Starting tabu search phase. " + str(time.perf_counter() - start_time))
+    ftt = feasible_timetable.FeasibleTimetable(events_1,
+                                               timetable)
+    ftt.simulated_annealing(5, 1.3, 5)
     #print("Completed tabu search phase.  " + str(time.perf_counter() - start_time))
     # timetable_2 = copy.deepcopy(timetable)
     # construct_timetable_2a = ctt.ConstructTimeTable(events_list=events_2[len(events_2):],
@@ -62,8 +63,8 @@ def main():
 
     # Start the second phase of the feasibility process: tabu search
     print("Starting improving phase. " + str(time.perf_counter() - start_time))
-    improve = improveTimeTable.ImproveTimeTable(timetable)
-    improve.switch_time_slots_for_late_hour_penalty()
+    #improve = improveTimeTable.ImproveTimeTable(timetable)
+    #improve.remove_one_hour_lessons()
     #total_penalty = improve.best_cost
     #print("total penalty: " + str(total_penalty))
     print("Completed improving phase.  " + str(time.perf_counter() - start_time))

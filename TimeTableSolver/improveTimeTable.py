@@ -42,6 +42,10 @@ class ImproveTimeTable:
             self.timetable.assign_course_to_position(place[1], place[0])
 
     def switch_time_slots_for_late_hour_penalty(self):
+        """
+
+        :return:
+        """
         last_hour_penalty = sc.return_last_two_hour_penalty_all(self.timetable)
 
         # pick two time_slots in the same day, one must be the 6 or 7 (late hour)
@@ -74,3 +78,6 @@ class ImproveTimeTable:
                 self.switch_events_of_two_time_slots(day, 7+(day*8), smallest_count_ts_7+(day*8))
 
         return True
+
+    def remove_one_hour_lessons(self):
+       return None

@@ -5,7 +5,7 @@ import data
 import time
 import random
 import copy
-
+import math
 
 class FeasibleTimetable:
 
@@ -15,6 +15,47 @@ class FeasibleTimetable:
         self.best_distance = len(self.events)
         self.last_distance = len(self.events)
         self.best_feasible_tt = copy.deepcopy(timetable)
+
+
+    def try_unplaced_evnts(self):
+        count_unplaced_events = 0
+        for current_unplaced_event in self.events:
+            # we can't place this event no where in the table
+            count_unplaced_events += 1
+            print("count: " + str(count_unplaced_events))
+            print("course: " +str(current_unplaced_event.course_code))
+            # iterate over all positions in the time_table
+            fit_found = False
+            for pos in self.timetable.occupied_positions:
+                room = gi.class_rooms_dict[pos[0]]
+                placed_event = self.timetable.remove_course_from_position(pos)
+
+                if placed_event is False:
+                    # something went wrong with the remove
+                    print("something went wrong with the remove")
+                    continue
+
+                if hc.course_event_fits_into_time_slot(current_unplaced_event, pos[1]) and hc.room_capacity_constraint(current_unplaced_event, room):
+                    print("fits")
+                    available_pos = self.compute_available_positions_for_event(placed_event, pos)
+                    print(len(available_pos))
+                else:
+                    #print("geen fit")
+                    # current unplaced event doesn't fit in that post, place the removed event back in it
+                    self.timetable.assign_course_to_position(placed_event, pos)
+
+            print("end, no place")
+
+    def compute_available_positions_for_event(self, event, old_pos):
+        available_pos = []
+        for pos in self.timetable.empty_positions:
+            room = gi.class_rooms_dict[pos[0]]
+            if hc.course_event_fits_into_time_slot(event, pos[1]) and hc.room_capacity_constraint(event, room):
+                if pos != old_pos:
+                    available_pos.append(pos)
+        if len(available_pos) == 0:
+            print("NO POS")
+        return available_pos
 
     def position_swap(self, tabu_list):
         position_1, position_2 = neighborhood.get_random_positions(self.timetable)
@@ -226,3 +267,98 @@ class FeasibleTimetable:
                 self.split_event(tabu_split)
         print(len(self.events))
         return self.best_distance, self.best_feasible_tt
+
+    def simulated_annealing(self, t_max, t_min, steps):
+        starting_time = time.clock()
+
+        step = 0
+
+        t_factor = -math.log(float(t_max) / t_min)
+
+        no_improvement = 0
+
+        iterations = 0
+
+        while self.best_distance > 0 and time.clock() - starting_time < 300:
+            if no_improvement > 10:
+                step = 0
+
+            t_value = t_max * math.exp(t_factor * step / steps)
+
+            if t_value > t_min:
+                step += 1
+
+            #x = random.randrange(2)
+
+            change = self.swap_positions_sa(t_value)
+
+            if not change:
+                no_improvement += 1
+            else:
+                no_improvement = 0
+
+            print("length of unplaced: " + str(len(self.events)))
+
+        return self.best_distance, self.best_feasible_tt
+
+    def swap_positions_sa(self, t_value):
+        pos1, pos2 = neighborhood.get_random_positions(self.timetable)
+
+        backupEvents = copy.deepcopy(self.events)
+        backupTimeTable = copy.deepcopy(self.timetable)
+
+        succesful, backup1, backup2 = neighborhood.swap_positions(self.timetable,
+                                                                  self.events,
+                                                                  pos1,
+                                                                  pos2,
+                                                                  feasibility=False
+                                                                  )
+        if not succesful:
+            self.timetable = backupTimeTable
+            self.events = backupEvents
+            return False
+
+        print("Swap successful")
+
+        # try to assigning the unplaced events to empty positions
+        events_to_remove = []
+        for event in self.events:
+            count_curr = 0
+            count_lect = 0
+            for position in self.timetable.empty_positions:
+                room_fi_number = position[0]
+                time_slot = position[1]
+                room = gi.class_rooms_dict[room_fi_number]
+                if hc.curriculum_is_occupied_in_time_slot(event, time_slot):
+                    count_curr += 1
+
+                if hc.lecturers_are_occupied_in_time_slot(event, time_slot):
+                    count_lect += 1
+
+                # if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                #     self.timetable.assign_course_to_position(event, position)
+                #     events_to_remove.append(event)
+                #     break
+            print("count curriculum occupied: " + str(count_curr))
+            
+        if len(events_to_remove) == 0:
+            print("no events to remove")
+
+        # removed assigned events
+        for event in events_to_remove:
+            self.events.remove(event)
+
+        distance = len(self.events)
+        delta_e = distance - self.last_distance
+
+        if delta_e > 0 and random.random() > math.exp(-delta_e / t_value):
+            self.timetable = backupTimeTable
+            self.events = backupEvents
+            return False
+
+        print("Success !!!!!!!")
+        self.last_distance = distance
+        if self.last_distance <= self.best_distance:
+            self.best_feasible_tt = copy.deepcopy(self.timetable)
+            self.best_distance = distance
+        return True

@@ -2,7 +2,8 @@ import hard_constraints as hc
 import soft_constraints as sc
 import math
 import general_info as gi
-
+import data
+import random
 
 class ConstructTimeTable:
 
@@ -25,12 +26,14 @@ class ConstructTimeTable:
         # collect all available positions for this event
         for index, course_event in enumerate(sorted_events):
             available_positions = []
+
             for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
                 fits = hc.course_event_fits_into_time_slot(course_event, time_slot) and hc.room_capacity_constraint(
                     course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
+
             # if no available positions were found, the event gets added to unplaced_events
             if len(available_positions) == 0:
                 unplaced_events.append(course_event)
@@ -40,6 +43,7 @@ class ConstructTimeTable:
             sorted_positions = self.order_positions_by_priority(available_positions, course_event)
             best_fit = sorted_positions.pop(0)
             self.timetable.assign_course_to_position(course_event, best_fit)
+
         return unplaced_events, self.timetable
 
     def order_course_events_by_priority(self, course_events, courses_set):
@@ -62,8 +66,8 @@ class ConstructTimeTable:
             # highest priority
             # we invert the solution, because the lowest value has the highest priority
             # and we want to order from biggest priority value to smallest
-            rank1 = self.get_events_ranking1(course_event, lectures_amount[course_event.course_code])
-            course_events_ranking[course_event.course_code].append(1 / rank1 if rank1 != 0 else 0)
+            #rank1 = self.get_events_ranking1(course_event, lectures_amount[course_event.course_code])
+            #course_events_ranking[course_event.course_code].append(1 / rank1 if rank1 != 0 else 0)
             course_events_ranking[course_event.course_code].append(self.get_events_ranking2(course_event, list(courses_set)))
 
         courses_sorted = list(course_events)

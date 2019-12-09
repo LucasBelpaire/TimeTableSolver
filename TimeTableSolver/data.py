@@ -52,6 +52,7 @@ class Curriculum:
         if time_slot_number in self.occupied_time_slots:
             return False
         self.occupied_time_slots.append(time_slot_number)
+        self.occupied_time_slots.sort()
         return True
 
     def remove_occupied_time_slot(self, time_slot_number):
@@ -100,13 +101,23 @@ class CourseEvent:
     def remove_assigned_lecturer(self):
         self.assigned_lecturer = None
 
-
 class TimeTable:
 
     def __init__(self, timetable, occupied_positions, empty_positions):
         self.timetable = timetable
         self.occupied_positions = occupied_positions
         self.empty_positions = empty_positions
+
+    def compute_amount_of_available_time_slots(self, course_event):
+        """
+        :param course_event: an instance of course event
+        :return: the total number of available time slots for the given course
+        """
+        amount = 0
+        for i in range(gi.total_course_hours):
+            if hc.course_event_fits_into_time_slot(course_event, i):
+                amount += 1
+        return amount
 
     def assign_course_to_position(self, course_event, position):
         """
@@ -129,6 +140,7 @@ class TimeTable:
 
         for curriculum in course.curricula:
             # adding the time_slot to the list of occupied time_slots
+            #print("assign time slot ot curriculum")
             curriculum.add_occupied_time_slot(time_slot)
 
         # get a lecturer
