@@ -27,15 +27,15 @@ def generate_output_from_time_table(list_of_dicts):
                 # we get the student amount for this reservation
                 course_event_student_amount = course_event.student_amount
 
-                days_of_week = {0:"ma",
-                                1:"di",
-                                2:"wo",
-                                3:"do",
-                                4:"vr"}
+                days_of_week = {0: "ma",
+                                1: "di",
+                                2: "wo",
+                                3: "do",
+                                4: "vr"}
 
                 time_slot = position[1]
                 day = days_of_week[math.floor(int(time_slot)/8)]
-                hour = (int(time_slot)%8)+1
+                hour = (int(time_slot) % 8)+1
 
                 # we geven de dagen mee van de week als een lijst van strings
                 days = [day]
@@ -47,9 +47,9 @@ def generate_output_from_time_table(list_of_dicts):
                 end_reservation = {"lokaal": room_fi_number,
                                    "code": course_id,
                                    "aantal": course_event_student_amount,
-                                   "dagen":days,
+                                   "dagen": days,
                                    "weken": weeks,
-                                   "uren":hours}
+                                   "uren": hours}
 
                 room_reservation_dict.append(end_reservation)
 
