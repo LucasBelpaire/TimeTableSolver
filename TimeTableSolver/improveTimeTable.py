@@ -10,7 +10,10 @@ class ImproveTimeTable:
 
     def __init__(self, timetable):
         """
-        The constructor for the third phase the improvement phase
+
+        The constructor for the third phase: the improvement phase
+        here we will try to reduce the total soft constraint penalty
+
         :param timetable: The feasible timetable that we want to improve
         """
         self.timetable = timetable # this will hold the final time table with the best penalty cost on the end
@@ -19,6 +22,7 @@ class ImproveTimeTable:
 
     def improve_time_table(self):
         """
+
         This function will improve the time table to reduce all the penalties from the soft constraints
         :return: we return the total soft constraint penalty
         """
@@ -29,50 +33,64 @@ class ImproveTimeTable:
 
         end_total_penalty = sc.return_total_penalty_of_timetable(self.timetable)
         print("Score after improvement: " +str(end_total_penalty))
+
         return end_total_penalty
 
     def get_count_events_on_time_slot(self, time_slot):
         """
+
         this function will count the amount of events on a given time slot over all rooms
         :param time_slot: the time slot we want to count all events from
         :return: we return the total count off all events on it.
         """
         count = 0
+
         for pos, event in self.timetable.timetable.items():
+
             if event is not None and pos[1] == time_slot:
                 count += 1
+
         return count
 
     def switch_events_of_two_time_slots(self, day, ts_1, ts_2):
         """
+
         This function will switch two time slots and all events with them, with the purpose to reduce the number of
         lessons given on the last two hours of a day
         :param day: the first parameter is the day where we want to switch time_slots
         :param ts_1: the first time slot
         :param ts_2: the second time slot
+
         """
+
         list_ts_1 = []
         list_ts_2 = []
 
         for oc_pos in self.timetable.occupied_positions:
+
             if oc_pos[1] == ts_1:
                 removed_event = self.timetable.remove_course_from_position(oc_pos)
                 list_ts_1.append(((oc_pos[0], ts_2), removed_event))
+
             elif oc_pos[1] == ts_2:
                 removed_event = self.timetable.remove_course_from_position(oc_pos)
                 list_ts_2.append(((oc_pos[0], ts_1), removed_event))
 
         for place in list_ts_1:
             self.timetable.assign_course_to_position(place[1], place[0])
+
         for place in list_ts_2:
             self.timetable.assign_course_to_position(place[1], place[0])
 
     def switch_time_slots_for_late_hour_penalty(self):
         """
+
         This function will try to switch as many time slots as possible to reduce the total penalty of late hours
         :return: return true if successful
         """
-        #last_hour_penalty = sc.return_last_two_hour_penalty_all(self.timetable)
+
+        # just for testing purposes
+        # last_hour_penalty = sc.return_last_two_hour_penalty_all(self.timetable)
 
         # pick two time_slots in the same day, one must be the 6 or 7 (late hour)
         for day in range(5):
@@ -102,5 +120,19 @@ class ImproveTimeTable:
 
             if smallest_count_ts_7 is not None:
                 self.switch_events_of_two_time_slots(day, 7+(day*8), smallest_count_ts_7+(day*8))
+
+        return True
+
+    def four_or_more_events(self):
+        """
+
+        This function will try to fix the soft constraint that a curriculum can't have 4 or more lessons after each other
+        :return: returns true if succesfull
+
+        """
+
+        for curriculum_id, curriculum in gi.curricula_dict.items():
+            events_of_curriculum = curriculum.occupied_time_slots
+
 
         return True

@@ -30,9 +30,14 @@ class TimeTableBuilder:
         events_1, timetable = construct_timetable.construct()
         print("Initial construction of timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
 
-        with open('events.pckl', 'wb') as f:
+        #with open('events.pckl', 'wb') as f:
+        #    pickle.dump(events_1, f)
+        #with open('timetable.pckl', 'wb') as f:
+        #    pickle.dump(timetable, f)
+
+        with open('imporve_events.pckl', 'wb') as f:
             pickle.dump(events_1, f)
-        with open('timetable.pckl', 'wb') as f:
+        with open('improve_timetable.pckl', 'wb') as f:
             pickle.dump(timetable, f)
 
         # f1 = open('timetable.pckl', 'rb')

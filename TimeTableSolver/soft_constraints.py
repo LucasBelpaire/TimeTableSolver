@@ -120,7 +120,8 @@ def return_only_one_hour_penalty(pos, event):
     """
     penalty = 0
     curricula = event.curricula
-    for curriculum in curricula:
+    for curriculum_id in curricula:
+        curriculum = gi.curricula_dict[curriculum_id]
         time_slot_list = curriculum.occupied_time_slots
         current_time_slot = pos[1]
         day = int(math.floor(current_time_slot/8))

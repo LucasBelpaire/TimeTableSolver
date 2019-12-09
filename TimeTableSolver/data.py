@@ -125,6 +125,8 @@ class TimeTable:
             # adding the time_slot to the list of occupied time_slots
             curriculum.add_occupied_time_slot(time_slot)
 
+        self.occupied_positions.sort()
+
         # get a lecturer
         assigned_lecturer = None
         for ugent_id in course_event.lecturers:
