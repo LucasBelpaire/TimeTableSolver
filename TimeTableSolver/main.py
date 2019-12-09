@@ -17,10 +17,6 @@ def main():
     process_input.init_general_info()
     timetable = process_input.create_initial_timetable()
     events_1, events_2, events_3, events_4 = process_input.create_initial_events_lists()
-    print(len(events_1))
-    print(len(events_2))
-    print(len(events_3))
-    print(len(events_4))
     courses_set = gi.courses_set
     print("Processing input completed.  " + str(time.perf_counter() - start_time))
 
@@ -30,11 +26,11 @@ def main():
                                             events_2=events_2,
                                             events_3=events_3,
                                             events_4=events_4,
-                                            courses_set=courses_set)
+                                            courses_set=courses_set,
+                                            start_time=start_time)
     timetable_complete = timetable_builder.build_timetable()
     # Start generating the output file
     print("Starting to generate output.  " + str(time.perf_counter() - start_time))
-    # go.generate_output_from_time_table( [(timetable2a, [1, 2, 3, 4, 5, 6]), (timetable2b, [7, 8, 9, 10, 11, 12])])
     go.generate_output_from_time_table(timetable_complete)
     print("Generating output completed.  " + str(time.perf_counter() - start_time))
 
