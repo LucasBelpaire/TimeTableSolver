@@ -48,7 +48,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break
@@ -89,7 +89,7 @@ class FeasibleTimetable:
         for empty_position in self.timetable.empty_positions:
             fi_number = empty_position[0]
             time_slot = empty_position[1]
-            if hc.course_event_fits_into_time_slot(event, time_slot):
+            if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40):
                 size = gi.class_rooms_dict[fi_number].capacity
                 if size > biggest_capacity:
                     biggest_capacity = size
@@ -130,7 +130,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break
@@ -172,7 +172,7 @@ class FeasibleTimetable:
                 room_fi_number = position[0]
                 time_slot = position[1]
                 room = gi.class_rooms_dict[room_fi_number]
-                if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+                if hc.course_event_fits_into_time_slot(event, time_slot + self.timetable.offset*40) and hc.room_capacity_constraint(event, room):
                     self.timetable.assign_course_to_position(event, position)
                     events_to_remove.append(event)
                     break

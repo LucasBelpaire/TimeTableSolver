@@ -62,14 +62,14 @@ def swap_positions(timetable, events, position_1, position_2, feasibility=True):
         # Check if no hard constraints get violated
         if event_1 is not None:
             timetable.remove_course_from_position(position_2)
-            swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2) and hc.room_capacity_constraint(event_1, room_2)
+            swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2+timetable.offset*40) and hc.room_capacity_constraint(event_1, room_2)
             timetable.assign_course_to_position(event_2, position_2)
             if not swap_possible:
                 return False, timetable, events
 
         if event_2 is not None:
             timetable.remove_course_from_position(position_1)
-            swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1) and hc.room_capacity_constraint(event_2, room_1)
+            swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1+timetable.offset*40) and hc.room_capacity_constraint(event_2, room_1)
             timetable.assign_course_to_position(event_1, position_1)
             if not swap_possible:
                 return False, timetable, events
@@ -86,13 +86,13 @@ def swap_positions(timetable, events, position_1, position_2, feasibility=True):
     timetable.remove_course_from_position(position_2)
     timetable.remove_course_from_position(position_1)
     if event_1 is not None:
-        swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2) and hc.room_capacity_constraint(event_1, room_2)
+        swap_possible = hc.course_event_fits_into_time_slot(event_1, time_slot_2+timetable.offset*40) and hc.room_capacity_constraint(event_1, room_2)
         if swap_possible:
             timetable.assign_course_to_position(event_1, position_2)
         else:
             events.append(event_1)
     if event_2 is not None:
-        swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1) and hc.room_capacity_constraint(event_2, room_1)
+        swap_possible = hc.course_event_fits_into_time_slot(event_2, time_slot_1+timetable.offset*40) and hc.room_capacity_constraint(event_2, room_1)
         if swap_possible:
             timetable.assign_course_to_position(event_2, position_1)
         else:
@@ -119,7 +119,7 @@ def swap_occupied_for_unplaced_in_time_slot(timetable, events, time_slot):
         time_slot = occupied_position[1]
         found_replacement = False
         for event in events:
-            if hc.course_event_fits_into_time_slot(event, time_slot) and hc.room_capacity_constraint(event, room):
+            if hc.course_event_fits_into_time_slot(event, time_slot+timetable.offset*40) and hc.room_capacity_constraint(event, room):
                 timetable.assign_course_to_position(event, occupied_position)
                 found_replacement = True
                 break
