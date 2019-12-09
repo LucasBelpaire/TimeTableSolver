@@ -4,6 +4,7 @@ import copy
 import time
 import random
 import pickle
+import improveTimeTable as it
 
 
 class TimeTableBuilder:
@@ -248,6 +249,33 @@ class TimeTableBuilder:
         events_4l, timetable_4l = ft_4l.tabu_search()
         print("Tabu search on timetable type 4 is finished.  " + str(time.perf_counter() - self.start_time))
 
+
+        # improving the timetables for a better on the soft constriants
+        improve_tt_4a = it.ImproveTimeTable(timetable_4a)
+        improve_tt_4a.improve_time_table()
+        improve_tt_4b = it.ImproveTimeTable(timetable_4b)
+        improve_tt_4b.improve_time_table()
+        improve_tt_4c = it.ImproveTimeTable(timetable_4c)
+        improve_tt_4c.improve_time_table()
+        improve_tt_4d = it.ImproveTimeTable(timetable_4d)
+        improve_tt_4d.improve_time_table()
+        improve_tt_4e = it.ImproveTimeTable(timetable_4e)
+        improve_tt_4e.improve_time_table()
+        improve_tt_4f = it.ImproveTimeTable(timetable_4f)
+        improve_tt_4f.improve_time_table()
+        improve_tt_4g = it.ImproveTimeTable(timetable_4g)
+        improve_tt_4g.improve_time_table()
+        improve_tt_4h = it.ImproveTimeTable(timetable_4h)
+        improve_tt_4h.improve_time_table()
+        improve_tt_4j = it.ImproveTimeTable(timetable_4j)
+        improve_tt_4j.improve_time_table()
+        improve_tt_4i = it.ImproveTimeTable(timetable_4i)
+        improve_tt_4i.improve_time_table()
+        improve_tt_4k = it.ImproveTimeTable(timetable_4k)
+        improve_tt_4k.improve_time_table()
+        improve_tt_4l = it.ImproveTimeTable(timetable_4l)
+        improve_tt_4l.improve_time_table()
+
         # fixing unplaced events
         # type 1
         unplaced_events = []
@@ -274,19 +302,22 @@ class TimeTableBuilder:
         events_13, timetable_13 = ft_13.tabu_search()
         print(len(events_13))
 
-        return [(timetable_4a, [1]),
-                (timetable_4b, [2]),
-                (timetable_4c, [3]),
-                (timetable_4d, [4]),
-                (timetable_4e, [5]),
-                (timetable_4f, [6]),
-                (timetable_4g, [7]),
-                (timetable_4h, [8]),
-                (timetable_4i, [9]),
-                (timetable_4j, [10]),
-                (timetable_4k, [11]),
-                (timetable_4l, [12]),
-                (timetable_13, [13])]
+        improve_tt_13 = it.ImproveTimeTable(ft_13)
+        improve_tt_13.improve_time_table()
+
+        return [(improve_tt_4a, [1]),
+                (improve_tt_4b, [2]),
+                (improve_tt_4c, [3]),
+                (improve_tt_4d, [4]),
+                (improve_tt_4e, [5]),
+                (improve_tt_4f, [6]),
+                (improve_tt_4g, [7]),
+                (improve_tt_4h, [8]),
+                (improve_tt_4i, [9]),
+                (improve_tt_4j, [10]),
+                (improve_tt_4k, [11]),
+                (improve_tt_4l, [12]),
+                (improve_tt_13, [13])]
 
     @staticmethod
     def split(a, n):
