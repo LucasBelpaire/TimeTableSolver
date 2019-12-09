@@ -2,6 +2,7 @@ import construct_timetable as ct
 import feasible_timetable as ft
 import process_input as pi
 import copy
+import random
 import pickle
 
 
@@ -10,40 +11,45 @@ class TimeTableBuilder:
         self.timetable = timetable
         self.events_1 = events_1
         self.events_2 = events_2
+        random.shuffle(self.events_2)
         self.events_3 = events_3
+        random.shuffle(self.events_3)
         self.events_4 = events_4
+        random.shuffle(events_4)
         self.courses_set = courses_set
 
     def build_timetable(self):
         # events type 1
         print("Type 1")
-        # construct_timetable = ct.ConstructTimeTable(events_list=self.events_1,
-        #                                             courses_set=self.courses_set,
-        #                                             timetable=self.timetable)
-        # events_1, timetable = construct_timetable.construct()
-        # feasible_timetable = ft.FeasibleTimetable(events=events_1,
-        #                                           timetable=timetable)
-        # events_1, timetable = feasible_timetable.tabu_search()
-        #
-        # with open('events.pckl', 'wb') as f:
-        #     pickle.dump(events_1, f)
-        # with open('timetable.pckl', 'wb') as f:
-        #     pickle.dump(timetable, f)
+        construct_timetable = ct.ConstructTimeTable(events_list=self.events_1,
+                                                    courses_set=self.courses_set,
+                                                    timetable=self.timetable)
+        events_1, timetable = construct_timetable.construct()
 
-        f1 = open('timetable.pckl', 'rb')
-        timetable = pickle.load(f1)
-        f1.close()
-        f2 = open('events.pckl', 'rb')
-        events_1 = pickle.load(f2)
-        f2.close()
+        with open('events.pckl', 'wb') as f:
+            pickle.dump(events_1, f)
+        with open('timetable.pckl', 'wb') as f:
+            pickle.dump(timetable, f)
+
+        # f1 = open('timetable.pckl', 'rb')
+        # timetable = pickle.load(f1)
+        # f1.close()
+        # f2 = open('events.pckl', 'rb')
+        # events_1 = pickle.load(f2)
+        # f2.close()
+
+        feasible_timetable = ft.FeasibleTimetable(events=events_1,
+                                                  timetable=timetable)
+        events_1, timetable = feasible_timetable.tabu_search()
 
         # events type 2, split original timetable into two
         print("Type 2")
         events_2a = self.events_2[len(self.events_2):]
         events_2b = self.events_2[:len(self.events_2)]
 
-        timetable_2a = timetable
-        timetable_2b = copy.deepcopy(timetable)
+        timetable_2a = timetable  # starts at week 0 -> offset = 0
+        timetable_2b = copy.deepcopy(timetable)  # starts at week 6 -> offset = 6
+        timetable_2b.update_offset(5)
 
         construct_timetable_2a = ct.ConstructTimeTable(events_list=events_2a,
                                                        courses_set=self.courses_set,
@@ -62,10 +68,12 @@ class TimeTableBuilder:
 
         # events type 3
         print("Type 3")
-        timetable_3a = timetable_2a
-        timetable_3b = copy.deepcopy(timetable_2a)
-        timetable_3c = timetable_2b
-        timetable_3d = copy.deepcopy(timetable_2b)
+        timetable_3a = timetable_2a  # starts at week 0 -> offset = 0
+        timetable_3b = copy.deepcopy(timetable_2a)  # starts at week 3 -> offset = 3
+        timetable_3b.update_offset(3)
+        timetable_3c = timetable_2b  # starts at week 6 -> offset = 6
+        timetable_3d = copy.deepcopy(timetable_2b)  # starts at week 9 -> offset = 9
+        timetable_3d.update_offset(9)
 
         events_3 = list(self.split(self.events_3, 4))
         events_3a = events_3[0]
@@ -105,18 +113,26 @@ class TimeTableBuilder:
 
         # events type 4
         print("Type 4")
-        timetable_4a = timetable_3a
-        timetable_4b = copy.deepcopy(timetable_3a)
-        timetable_4c = copy.deepcopy(timetable_3a)
-        timetable_4d = timetable_3b
-        timetable_4e = copy.deepcopy(timetable_3b)
-        timetable_4f = copy.deepcopy(timetable_3b)
-        timetable_4g = timetable_3c
-        timetable_4h = copy.deepcopy(timetable_3c)
-        timetable_4i = copy.deepcopy(timetable_3c)
-        timetable_4j = timetable_3d
-        timetable_4k = copy.deepcopy(timetable_3d)
-        timetable_4l = copy.deepcopy(timetable_3d)
+        timetable_4a = timetable_3a  # starts at week 0 -> offset = 0
+        timetable_4b = copy.deepcopy(timetable_3a)  # starts at week 1 -> offset = 1
+        timetable_4b.update_offset(1)
+        timetable_4c = copy.deepcopy(timetable_3a)  # starts at week 2 -> offset = 2
+        timetable_4b.update_offset(2)
+        timetable_4d = timetable_3b  # starts at week 3 -> offset = 3
+        timetable_4e = copy.deepcopy(timetable_3b)  # starts at week 4 -> offset = 4
+        timetable_4e.update_offset(4)
+        timetable_4f = copy.deepcopy(timetable_3b)  # starts at week 5 -> offset = 5
+        timetable_4f.update_offset(5)
+        timetable_4g = timetable_3c  # starts at week 6 -> offset = 6
+        timetable_4h = copy.deepcopy(timetable_3c)  # starts at week 7 -> offset = 7
+        timetable_4h.update_offset(7)
+        timetable_4i = copy.deepcopy(timetable_3c)  # starts at week 8 -> offset = 8
+        timetable_4i.update_offset(8)
+        timetable_4j = timetable_3d  # starts at week 9 -> offset = 9
+        timetable_4k = copy.deepcopy(timetable_3d)  # starts at week 10 -> offset = 10
+        timetable_4k.update_offset(10)
+        timetable_4l = copy.deepcopy(timetable_3d)  # starts at week 11 -> offset = 11
+        timetable_4l.update_offset(11)
 
         events_4 = list(self.split(self.events_4, 12))
         events_4a = events_4[0]
@@ -224,23 +240,46 @@ class TimeTableBuilder:
         # type 1
         unplaced_events = []
         for i in range(12):
-            unplaced_events += events_1
+            unplaced_events += copy.deepcopy(events_1)
         # type 2
         for i in range(6):
-            unplaced_events += events_2a + events_2b
+            unplaced_events += copy.deepcopy(events_2a) + copy.deepcopy(events_2b)
         # type 3
         for i in range(3):
-            unplaced_events += events_3a + events_3b + events_3c + events_3d
+            unplaced_events += copy.deepcopy(events_3a) + copy.deepcopy(events_3b) + copy.deepcopy(events_3c) + copy.deepcopy(events_3d)
         # type 4
-        unplaced_events += events_4a + events_4b + events_4c + events_4d + events_4e + events_4f
-        unplaced_events += events_4g + events_4h + events_4i + events_4j + events_4k + events_4l
+        unplaced_events += copy.deepcopy(events_4a) + copy.deepcopy(events_4b) + copy.deepcopy(events_4c) + copy.deepcopy(events_4d) + copy.deepcopy(events_4e) + copy.deepcopy(events_4f)
+        unplaced_events += copy.deepcopy(events_4g) + copy.deepcopy(events_4h) + copy.deepcopy(events_4i) + copy.deepcopy(events_4j) + copy.deepcopy(events_4k) + copy.deepcopy(events_4l)
         print("unplaced: "+str(len(unplaced_events)))
         timetable_13 = pi.create_initial_timetable()
+        timetable.update_offset(12)
         ct_13 = ct.ConstructTimeTable(events_list=unplaced_events,
                                       courses_set=self.courses_set,
                                       timetable=timetable_13)
         events_13, timetable_13 = ct_13.construct()
         print(len(events_13))
+
+        # test
+        l = [(timetable_4a, [1]),
+                (timetable_4b, [2]),
+                (timetable_4c, [3]),
+                (timetable_4d, [4]),
+                (timetable_4e, [5]),
+                (timetable_4f, [6]),
+                (timetable_4g, [7]),
+                (timetable_4h, [8]),
+                (timetable_4i, [9]),
+                (timetable_4j, [10]),
+                (timetable_4k, [11]),
+                (timetable_4l, [12]),
+                (timetable_13, [13])]
+        for index, tup in enumerate(l):
+            fst = tup[0]
+            count = 0
+            for value in fst.timetable.values():
+                if value is not None:
+                    count += 1
+            print("Timetable "+str(index)+"  "+str(count))
 
         return [(timetable_4a, [1]),
                 (timetable_4b, [2]),
@@ -255,6 +294,8 @@ class TimeTableBuilder:
                 (timetable_4k, [11]),
                 (timetable_4l, [12]),
                 (timetable_13, [13])]
+
+        # return [(timetable, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])]
 
     @staticmethod
     def split(a, n):
