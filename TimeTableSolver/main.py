@@ -18,6 +18,9 @@ def main():
     timetable = process_input.create_initial_timetable()
     events_1, events_2, events_3, events_4 = process_input.create_initial_events_lists()
     print(len(events_1))
+    print(len(events_2))
+    print(len(events_3))
+    print(len(events_4))
     courses_set = gi.courses_set
     print("Processing input completed.  " + str(time.perf_counter() - start_time))
 
