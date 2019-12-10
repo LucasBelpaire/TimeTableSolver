@@ -24,10 +24,10 @@ class TimeTableBuilder:
         timetable_13 = copy.deepcopy(self.timetable)  # empty timetable which will be used to represent the last week
         # events type 1
         print("Starting initial construction of timetable type 1.  " + str(time.perf_counter() - self.start_time))
-        construct_timetable = ct.ConstructTimeTable(events_list=self.events_1,
-                                                    courses_set=self.courses_set,
-                                                    timetable=self.timetable)
-        events_1, timetable = construct_timetable.construct()
+        #construct_timetable = ct.ConstructTimeTable(events_list=self.events_1,
+        #                                            courses_set=self.courses_set,
+        #                                            timetable=self.timetable)
+        #events_1, timetable = construct_timetable.construct()
         print("Initial construction of timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
 
         #with open('events.pckl', 'wb') as f:
@@ -35,17 +35,17 @@ class TimeTableBuilder:
         #with open('timetable.pckl', 'wb') as f:
         #    pickle.dump(timetable, f)
 
-        with open('imporve_events.pckl', 'wb') as f:
-            pickle.dump(events_1, f)
-        with open('improve_timetable.pckl', 'wb') as f:
-            pickle.dump(timetable, f)
+        #with open('imporve_events.pckl', 'wb') as f:
+        #    pickle.dump(events_1, f)
+        #with open('improve_timetable.pckl', 'wb') as f:
+        #    pickle.dump(timetable, f)
 
-        # f1 = open('timetable.pckl', 'rb')
-        # timetable = pickle.load(f1)
-        # f1.close()
-        # f2 = open('events.pckl', 'rb')
-        # events_1 = pickle.load(f2)
-        # f2.close()
+        f1 = open('timetable.pckl', 'rb')
+        timetable = pickle.load(f1)
+        f1.close()
+        f2 = open('events.pckl', 'rb')
+        events_1 = pickle.load(f2)
+        f2.close()
         print("Starting tabu search on timetable type 1.  " + str(time.perf_counter() - self.start_time))
         feasible_timetable = ft.FeasibleTimetable(events=events_1,
                                                   timetable=timetable)
@@ -257,29 +257,29 @@ class TimeTableBuilder:
 
         # improving the timetables for a better on the soft constriants
         improve_tt_4a = it.ImproveTimeTable(timetable_4a)
-        improve_tt_4a.improve_time_table()
+        improve_tt_4a_result = improve_tt_4a.improve_time_table()
         improve_tt_4b = it.ImproveTimeTable(timetable_4b)
-        improve_tt_4b.improve_time_table()
+        improve_tt_4b_result = improve_tt_4b.improve_time_table()
         improve_tt_4c = it.ImproveTimeTable(timetable_4c)
-        improve_tt_4c.improve_time_table()
+        improve_tt_4c_result = improve_tt_4c.improve_time_table()
         improve_tt_4d = it.ImproveTimeTable(timetable_4d)
-        improve_tt_4d.improve_time_table()
+        improve_tt_4d_result = improve_tt_4d.improve_time_table()
         improve_tt_4e = it.ImproveTimeTable(timetable_4e)
-        improve_tt_4e.improve_time_table()
+        improve_tt_4e_result = improve_tt_4e.improve_time_table()
         improve_tt_4f = it.ImproveTimeTable(timetable_4f)
-        improve_tt_4f.improve_time_table()
+        improve_tt_4f_result = improve_tt_4f.improve_time_table()
         improve_tt_4g = it.ImproveTimeTable(timetable_4g)
-        improve_tt_4g.improve_time_table()
+        improve_tt_4g_result = improve_tt_4g.improve_time_table()
         improve_tt_4h = it.ImproveTimeTable(timetable_4h)
-        improve_tt_4h.improve_time_table()
+        improve_tt_4h_result = improve_tt_4h.improve_time_table()
         improve_tt_4j = it.ImproveTimeTable(timetable_4j)
-        improve_tt_4j.improve_time_table()
+        improve_tt_4j_result = improve_tt_4j.improve_time_table()
         improve_tt_4i = it.ImproveTimeTable(timetable_4i)
-        improve_tt_4i.improve_time_table()
+        improve_tt_4i_result = improve_tt_4i.improve_time_table()
         improve_tt_4k = it.ImproveTimeTable(timetable_4k)
-        improve_tt_4k.improve_time_table()
+        improve_tt_4k_result = improve_tt_4k.improve_time_table()
         improve_tt_4l = it.ImproveTimeTable(timetable_4l)
-        improve_tt_4l.improve_time_table()
+        improve_tt_4l_result = improve_tt_4l.improve_time_table()
 
         # fixing unplaced events
         # type 1
@@ -307,22 +307,22 @@ class TimeTableBuilder:
         events_13, timetable_13 = ft_13.tabu_search()
         print(len(events_13))
 
-        improve_tt_13 = it.ImproveTimeTable(ft_13)
-        improve_tt_13.improve_time_table()
+        improve_tt_13 = it.ImproveTimeTable(timetable_13)
+        improve_tt_13_result = improve_tt_13.improve_time_table()
 
-        return [(improve_tt_4a, [1]),
-                (improve_tt_4b, [2]),
-                (improve_tt_4c, [3]),
-                (improve_tt_4d, [4]),
-                (improve_tt_4e, [5]),
-                (improve_tt_4f, [6]),
-                (improve_tt_4g, [7]),
-                (improve_tt_4h, [8]),
-                (improve_tt_4i, [9]),
-                (improve_tt_4j, [10]),
-                (improve_tt_4k, [11]),
-                (improve_tt_4l, [12]),
-                (improve_tt_13, [13])]
+        return [(improve_tt_4a_result, [1]),
+                (improve_tt_4b_result, [2]),
+                (improve_tt_4c_result, [3]),
+                (improve_tt_4d_result, [4]),
+                (improve_tt_4e_result, [5]),
+                (improve_tt_4f_result, [6]),
+                (improve_tt_4g_result, [7]),
+                (improve_tt_4h_result, [8]),
+                (improve_tt_4i_result, [9]),
+                (improve_tt_4j_result, [10]),
+                (improve_tt_4k_result, [11]),
+                (improve_tt_4l_result, [12]),
+                (improve_tt_13_result, [13])]
 
     @staticmethod
     def split(a, n):

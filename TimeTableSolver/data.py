@@ -125,7 +125,7 @@ class TimeTable:
             # adding the time_slot to the list of occupied time_slots
             curriculum.add_occupied_time_slot(time_slot)
 
-        self.occupied_positions.sort()
+        #self.occupied_positions.sort()
 
         # get a lecturer
         assigned_lecturer = None
@@ -134,6 +134,9 @@ class TimeTable:
             if not hc.lecturer_is_occupied_in_time_slot(lecturer, time_slot):
                 assigned_lecturer = lecturer
                 break
+
+        if assigned_lecturer is None:
+            return False
 
         assigned_lecturer.add_occupied_time_slot(time_slot)
         course_event.set_assigned_lecturer(assigned_lecturer.ugent_id)
