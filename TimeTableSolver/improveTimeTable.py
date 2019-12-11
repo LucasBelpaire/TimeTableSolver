@@ -4,6 +4,8 @@ import soft_constraints as sc
 import neighborhood
 import general_info as gi
 import hard_constraints as hc
+import random
+import copy
 
 class ImproveTimeTable:
 
@@ -17,6 +19,11 @@ class ImproveTimeTable:
         self.last_cost = self.best_cost
 
     def get_count_events_on_time_slot(self, time_slot):
+        """
+        This function will count the total amount of events on this time slot
+        :param time_slot: the current time slot
+        :return: we return the total amount
+        """
         count = 0
         for pos, event in self.timetable.timetable.items():
             if event is not None and pos[1] == time_slot:
@@ -75,4 +82,75 @@ class ImproveTimeTable:
 
         return True
 
-    
+    def simulated_annealing(self, t_max, t_min, steps):
+        """
+        This function will execute simulated annealing on the current time table
+        :param t_max: The highest temp
+        :param t_min:  The lowest Temp
+        :param steps: count of steps
+        :return: we return the total cost of the final timetable
+        """
+        starting_time = time.clock()
+
+        step = 0
+
+        t_factor = -math.log(float(t_max) / t_min)
+
+        no_improvement = 0
+
+        # iterations = 0
+
+        while self.best_cost > 0 and time.clock() - starting_time < 60:
+            if no_improvement > 10:
+                step = 0
+
+            t_value = t_max * math.exp(t_factor * step / steps)
+
+            if t_value > t_min:
+                step += 1
+
+            # select a random neighborhood move
+            # x = random.randrange(2)
+
+            change = self.swap_positions_sa(t_value)
+
+            if not change:
+                no_improvement += 1
+            else:
+                no_improvement = 0
+
+            print("total cost of tt: " + str(self.best_cost))
+
+        return True
+
+    def swap_positions_sa(self, t_value):
+        """
+        This function will swap 2 positions for the simulated annealing process
+        :param t_value: The current temp
+        :return: we return True if successful else False
+        """
+        pos1, pos2 = neighborhood.get_random_positions(self.timetable)
+
+        backup_time_table = copy.deepcopy(self.timetable)
+
+        successful, backup1, backup2 = neighborhood.swap_positions(self.timetable, [], pos1, pos2, feasibility=True)
+
+        if not successful:
+            print("swap was no success")
+            self.timetable = backup_time_table
+            return False
+
+        print("swap is SUCCESSFUL")
+        total_cost = sc.return_total_penalty_of_timetable(self.timetable)
+        delta_e = total_cost - self.last_cost
+
+        if delta_e > 0 and random.random() > math.exp(-delta_e / t_value):
+            self.timetable = backup_time_table
+            return False
+
+        self.last_cost = total_cost
+
+        if total_cost < self.best_cost:
+            self.best_cost = total_cost
+
+        return True
