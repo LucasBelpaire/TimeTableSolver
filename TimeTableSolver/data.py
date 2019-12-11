@@ -14,7 +14,6 @@ class Course:
         self.lecturers = lecturers
         self.curricula = curricula
         self.course_events = []
-        self.course_hours_per_week = None
 
 
 class Lecturer:
