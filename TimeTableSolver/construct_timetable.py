@@ -23,6 +23,7 @@ class ConstructTimeTable:
         # the events get sorted, harder to place events will get placed first
         sorted_events = self.order_course_events_by_priority(self.events, self.courses)
         # collect all available positions for this event
+
         for index, course_event in enumerate(sorted_events):
             available_positions = []
             for room_fi_number, time_slot in self.timetable.empty_positions:
@@ -31,6 +32,7 @@ class ConstructTimeTable:
                        and hc.room_capacity_constraint(course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
+
             # if no available positions were found, the event gets added to unplaced_events
             if len(available_positions) == 0:
                 unplaced_events.append(course_event)
@@ -40,6 +42,7 @@ class ConstructTimeTable:
             sorted_positions = self.order_positions_by_priority(available_positions, course_event)
             best_fit = sorted_positions.pop(0)
             self.timetable.assign_course_to_position(course_event, best_fit)
+
         return unplaced_events, self.timetable
 
     def order_course_events_by_priority(self, course_events, courses_set):
@@ -62,9 +65,10 @@ class ConstructTimeTable:
             # highest priority
             # we invert the solution, because the lowest value has the highest priority
             # and we want to order from biggest priority value to smallest
+            course_events_ranking[course_event.course_code].append(self.get_events_ranking2(course_event, list(courses_set)))
             rank1 = self.get_events_ranking1(course_event, lectures_amount[course_event.course_code])
             course_events_ranking[course_event.course_code].append(1 / rank1 if rank1 != 0 else 0)
-            course_events_ranking[course_event.course_code].append(self.get_events_ranking2(course_event, list(courses_set)))
+
 
         courses_sorted = list(course_events)
         courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
@@ -167,12 +171,36 @@ class ConstructTimeTable:
 
         for room_fi_number, time_slot in positions:
             room = gi.class_rooms_dict[room_fi_number]
+
+            # last two hours or not
+            rank0 = self.get_positions_ranking0(time_slot, course_event)
+            positions_ranking[room_fi_number].append(rank0)
+
+            # home or not
             rank1 = self.get_positions_ranking1(room, course_event)
             positions_ranking[room.fi_number].append(rank1)
+
+            # room capacity
             rank2 = self.get_positions_ranking2(room, course_event)
             positions_ranking[room.fi_number].append(rank2)
+
         positions.sort(key=lambda tup: positions_ranking[tup[0]], reverse=False)
         return positions
+
+    @staticmethod
+    def get_positions_ranking0(time_slot, course_event):
+        """
+        This function will try to assign timeslots that aren't the two last hours of a day
+        :param time_slot: the current time_slot
+        :param course_event: the current course_event
+        :return: return 0 or 1, 1 if a last two hours
+        """
+
+        hour = time_slot % 8
+        if hour == 6 or hour == 7:
+            return 1
+
+        return 0
 
     @staticmethod
     def get_positions_ranking1(room, course_event):

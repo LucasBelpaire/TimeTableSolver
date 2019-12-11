@@ -16,6 +16,62 @@ class FeasibleTimetable:
         self.last_distance = len(self.events)
         self.best_feasible_tt = copy.deepcopy(timetable)
 
+    def swap_curriculum(self):
+        print("voor te beginnen: " + str(len(self.events)))
+
+        removed_events = []
+        for pos, event in self.timetable.timetable.items():
+            if event is not None:
+                if len(event.curricula) == 2:
+                    print("a scheduled event with 2 curricula")
+                    new_event_1 = self.get_unplaced_event_with_curriculum(event.curricula[0], pos[1])
+                    new_event_2 = self.get_unplaced_event_with_curriculum(event.curricula[1], pos[1])
+                    if new_event_1 is not None and new_event_2 is not None:
+                        print("we found two events, each with a different curriculum and available lecturers for both")
+                        found_new_pos_event_1 = self.find_new_pos(pos[1], new_event_1)
+                        if found_new_pos_event_1 is not None:
+                            print("new event 1 heeft een plaats gevonden")
+                            found_new_pos_event_2 = self.find_new_pos(pos[1], new_event_2)
+                            if found_new_pos_event_2 is not None:
+                                while found_new_pos_event_1 == found_new_pos_event_2:
+                                    found_new_pos_event_2 = self.find_new_pos(pos[1], new_event_2)
+                                print("TWEE NIEUWE PLAATSEN GEVONDEN, verwissel ze!!!!")
+
+                                removed = self.timetable.remove_course_from_position(pos)
+                                if removed is not None:
+                                    print("het te verwidjeren element is gelukt")
+                                    removed_events.append(removed)
+                                self.timetable.assign_course_to_position(new_event_1, found_new_pos_event_1)
+                                self.timetable.assign_course_to_position(new_event_2, found_new_pos_event_2)
+                        else:
+                            print("new event een heeft geen plaats gevonden")
+                            continue
+                    else:
+                        print("geen twee events gevonden")
+        print("removed events weer toevoegen")
+        self.events.extend(removed_events)
+        print("erna: " + str(len(self.events)))
+
+    def find_new_pos(self, time_slot, new_event):
+        for empty_pos in self.timetable.empty_positions:
+            hour = empty_pos[1] % 8
+            if hour == time_slot:
+                room = gi.class_rooms_dict[empty_pos[0]]
+                if hc.course_event_fits_into_time_slot(new_event, time_slot) and hc.room_capacity_constraint(new_event, room):
+                    return empty_pos
+        return None
+
+    def get_unplaced_event_with_curriculum(self, curriculum_id, time_slot):
+        for unplaced_event in self.events:
+            if len(unplaced_event.curricula) == 1:
+                if curriculum_id == unplaced_event.curricula[0]:
+                    print("Found an unplaced event with the same curriculum")
+                    if not hc.lecturers_are_occupied_in_time_slot(unplaced_event, time_slot):
+                        print("Found a teacher that is available on this time_slot")
+                        return unplaced_event
+        return None
+
+
     def position_swap(self, tabu_list):
         position_1, position_2 = neighborhood.get_random_positions(self.timetable)
 
@@ -197,7 +253,7 @@ class FeasibleTimetable:
 
     def tabu_search(self):
         starting_time = time.clock()
-        max_time = 20
+        max_time = 0
         tabu_positions = []
         tabu_split = []
         tabu_unplaced_swap = []
