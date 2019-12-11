@@ -8,7 +8,29 @@ import math
 
 def return_not_home_penalty(room, course_event):
     """
-    This function calculates the not_home penalty for a given room and course.
+    this function will return the total not home penalty
+    :param room: the specific room
+    :param course_event: the current course event
+    :return: we return 0 if at home, otherwise the total not_home_penalty
+    """
+
+    curricula_of_courses = course_event.curricula
+
+    if len(curricula_of_courses) == 0:
+        # no curricula, so also no not home_penalty, can be placed anywhere
+        return 0
+
+    total_penalty = 0
+    for curriculum_code in curricula_of_courses:
+        curriculum = gi.curricula_dict[curriculum_code]
+        if curriculum.home_site != room.site_id:
+            total_penalty += gi.not_home_penalty
+
+    return total_penalty
+
+def return_distance_penalty(room, course_event):
+    """
+    This function calculates the distance for all students to the specific room
     :param room: instance of ClassRoom
     :param course_event: instance of CourseEvent
     :return: The total not_home penalty.
@@ -38,6 +60,20 @@ def return_not_home_penalty(room, course_event):
 
     return total_penalty
 
+def return_not_home_penalty_all(timetable):
+    count = 0
+    for pos, event in timetable.timetable.items():
+        if event is not None:
+            curricula_of_courses = event.curricula
+            if len(curricula_of_courses) == 0:
+                continue
+            for curriculum_id in curricula_of_courses:
+                curriculum = gi.curricula_dict[curriculum_id]
+                class_room = gi.class_rooms_dict[pos[0]]
+                if curriculum.home_site != class_room.site_id:
+                    count += 1
+
+    return count * gi.not_home_penalty
 
 def return_room_size_penalty_all(timetable):
     """
@@ -107,8 +143,24 @@ def return_to_many_straight_hours_penalty_all(timetable):
     :param timetable: the object that holds the time table
     :return: we return the total penalty
     """
-    # TODO: finish this function
-    return None
+
+    count = 0
+
+    for curriculum_id, curriculum in gi.curricula_dict.items():
+
+        events_of_curriculum = sorted(curriculum.occupied_time_slots)
+        #print(len(events_of_curriculum))
+        # check if there are 4 or more events after each other
+        for i in range(len(events_of_curriculum) - 4):
+            #print("test")
+            sub_list_to_check = events_of_curriculum[i:(i+4)]
+            len(sub_list_to_check)
+            if sorted(sub_list_to_check) == sub_list_to_check:
+                # 4 events after each other
+                count += 1
+
+    #print("aantal 4 of meer:" + str(count))
+    return count
 
 
 def return_only_one_hour_penalty(pos, event):
@@ -143,24 +195,56 @@ def return_only_one_hour_penalty_all(timetable):
     :param timetable: the object that will hold the timetable
     :return: we return the total penalty
     """
+
     one_hour_total_penalty = 0
     for pos, event in timetable.timetable.items():
         if event is not None:
             one_hour_total_penalty += return_only_one_hour_penalty(pos, event)
-
+    print("One hour penalty: " +str(one_hour_total_penalty))
     return one_hour_total_penalty
 
     # alternative solution to compute the one_hour penalty
+    # total_penalty = 0
     # for id, curriculum in gi.curricula_dict.items():
-    #     time_slot_list = curriculum.occupied_time_slots
-    #     days = [0,0,0,0,0]
-    #     for ts in time_slot_list:
-    #         day = int(math.floor(ts/8))
-    #         days[day] += 1
-    #     for i in range(5):
-    #         if days[i] == 1:
-    #             one_hour_total_penalty += 1
+    #     time_slot_list = sorted(curriculum.occupied_time_slots)
+    #     days = [False, False, False, False, False]
+    #     only_events_list = []
+    #     only_events_and_pos_list = []
+    #     for index in range(len(time_slot_list) - 1):
+    #         current_ts = time_slot_list[index]
+    #         next_ts = time_slot_list[index+1]
+    #         current_day = int(math.floor(current_ts/8))
+    #         next_day = int(math.floor(next_ts/8))
+    #         if current_day != next_day and not days[current_day]:
+    #             # new only event on this day
+    #             only_events_list.append(current_ts)
+    #             # get the pos and event from this one
+    #             pos, event = get_pos_and_event_from_ts(timetable, current_ts, id)
+    #             only_events_and_pos_list.append((pos, event))
+    #         else:
+    #             days[current_day] = True
+    #     total_penalty += len(only_events_list)
+    # return total_penalty
 
+def get_pos_and_event_from_ts(timetable, ts, curriculum_id):
+    final = []
+    for current_pos, current_event in timetable.timetable.items():
+        if current_event is not None and current_pos[1] == ts:
+            if curriculum_id in current_event.curricula:
+                final.append((current_pos, current_event))
+    if len(final) != 1:
+        print("length is niet 1, dus meerdere events gevonden op hetzelfde timeslot")
+        return False
+    return final[0]
+
+def return_distance_penalty(timetable):
+    total_penalty = 0
+    for pos, event in timetable.timetable.items():
+        if event is not None:
+            room = gi.class_rooms_dict[pos[0]]
+            total_penalty += return_not_home_penalty(room, event)
+
+    return total_penalty
 
 def return_total_penalty_of_timetable(timetable):
     """
@@ -171,8 +255,19 @@ def return_total_penalty_of_timetable(timetable):
     # a big value is a bad time_table with a lot of late hours
     late_hour_penalty = return_last_two_hour_penalty_all(timetable)
     one_hour_penalty = return_only_one_hour_penalty_all(timetable)
-    room_size = return_room_size_penalty_all(timetable)
-    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) + float(room_size)
+    #room_size = return_room_size_penalty_all(timetable)
+    to_many_straight_hours = return_to_many_straight_hours_penalty_all(timetable)
+
+    # not home penalty
+    not_home_penalty = return_not_home_penalty_all(timetable)
+    print("Not home penalty: " +str(not_home_penalty))
+
+    # Distance penalty
+    #distance_penalty = return_distance_penalty(timetable)
+
+    #final_distance_penalty = 4*distance_penalty/75
+
+    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) + float(to_many_straight_hours) + float(not_home_penalty) #+ float(final_distance_penalty)
     return total_penalty
 
 

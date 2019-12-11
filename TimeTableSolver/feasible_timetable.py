@@ -195,9 +195,9 @@ class FeasibleTimetable:
             self.best_distance = distance
         return True
 
-    def tabu_search(self):
+    def tabu_search(self, chanses=[16, 66]):
         starting_time = time.clock()
-        max_time = 20
+        max_time = 120
         tabu_positions = []
         tabu_split = []
         tabu_unplaced_swap = []
@@ -212,12 +212,12 @@ class FeasibleTimetable:
 
             # randomly choose an action
             action = random.randrange(100)
-            if action < 16:
+            if action < chanses[0]:
                 self.position_swap(tabu_positions)
                 continue
-            if action < 66:
+            if action < chanses[1]:
                 self.occupied_unplaced_time_slot_swap(tabu_unplaced_swap)
                 continue
-            if action >= 66:
+            if action >= chanses[1]:
                 self.split_event(tabu_split)
         return self.events, self.best_feasible_tt

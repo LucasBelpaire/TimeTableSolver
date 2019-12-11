@@ -2,14 +2,16 @@ import hard_constraints as hc
 import soft_constraints as sc
 import math
 import general_info as gi
+import random
 
 
 class ConstructTimeTable:
 
-    def __init__(self, events_list, courses_set, timetable):
+    def __init__(self, events_list, courses_set, timetable, week_13):
         self.events = events_list
         self.courses = courses_set
         self.timetable = timetable
+        self.week_13 = week_13
 
     def construct(self):
         """
@@ -25,15 +27,23 @@ class ConstructTimeTable:
         # collect all available positions for this event
         for index, course_event in enumerate(sorted_events):
             available_positions = []
+            random.shuffle(self.timetable.empty_positions)
+            curriculum_problem = 0
             for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
                 fits = hc.course_event_fits_into_time_slot(course_event, time_slot + self.timetable.offset*40) \
                        and hc.room_capacity_constraint(course_event, room)
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
+                else:
+                    if hc.curriculum_is_occupied_in_time_slot(course_event, time_slot):
+                        # not all available so curriculum problem
+                        curriculum_problem += 1
             # if no available positions were found, the event gets added to unplaced_events
             if len(available_positions) == 0:
                 unplaced_events.append(course_event)
+                if curriculum_problem == len(self.timetable.empty_positions):
+                    print("Curriculumproblem is even lang als alle vrije plaatsen")
                 continue
 
             # sort the available positions by possible fit, the best one gets selected
@@ -67,7 +77,7 @@ class ConstructTimeTable:
             course_events_ranking[course_event.course_code].append(self.get_events_ranking2(course_event, list(courses_set)))
 
         courses_sorted = list(course_events)
-        courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
+        courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse= (not self.week_13))
         return courses_sorted
 
     @staticmethod
@@ -166,13 +176,29 @@ class ConstructTimeTable:
             positions_ranking[room_fi_number] = []
 
         for room_fi_number, time_slot in positions:
+            rank0 = self.get_position_ranking_ts(time_slot)
+            positions_ranking[room_fi_number].append(rank0)
             room = gi.class_rooms_dict[room_fi_number]
             rank1 = self.get_positions_ranking1(room, course_event)
             positions_ranking[room.fi_number].append(rank1)
-            rank2 = self.get_positions_ranking2(room, course_event)
-            positions_ranking[room.fi_number].append(rank2)
+            #rank2 = self.get_positions_ranking2(room, course_event)
+            #positions_ranking[room.fi_number].append(rank2)
+            rank3 = self.get_positions_ranking3(room, course_event)
+            positions_ranking[room_fi_number].append(rank3)
         positions.sort(key=lambda tup: positions_ranking[tup[0]], reverse=False)
         return positions
+
+    @staticmethod
+    def get_position_ranking_ts(time_slot):
+        """
+        Rank 0, will look if the time_slot is a lesson on the last two hours of a day
+        :param time_slot: an int representing a time_slot
+        :return: we return 1 if the time_slot is on the two last hours
+        """
+        hour = time_slot%8
+        if hour == 6 or hour == 7:
+            return 1
+        return 0
 
     @staticmethod
     def get_positions_ranking1(room, course_event):
@@ -186,6 +212,17 @@ class ConstructTimeTable:
 
     @staticmethod
     def get_positions_ranking2(room, course_event):
+        """
+        This function will calculate the correct penalty for the distance
+        :param room: the room  we are using
+        :param course_event: the current event we want to schedule
+        :return: we return the total distance penalty
+        """
+        penalty = sc.return_distance_penalty(room, course_event)
+        return 4*penalty/75
+
+    @staticmethod
+    def get_positions_ranking3(room, course_event):
         """
         Rank2 indicates how many empty places there are left in a room.
         The smaller the better.

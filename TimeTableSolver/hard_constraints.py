@@ -63,7 +63,6 @@ def room_capacity_constraint(course_event, room):
         return True
     return False
 
-
 def course_event_fits_into_time_slot(course_event, time_slot):
     """
     Checks if a course event can be placed into a certain time slot.
