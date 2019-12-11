@@ -74,3 +74,5 @@ class ImproveTimeTable:
                 self.switch_events_of_two_time_slots(day, 7+(day*8), smallest_count_ts_7+(day*8))
 
         return True
+
+    
