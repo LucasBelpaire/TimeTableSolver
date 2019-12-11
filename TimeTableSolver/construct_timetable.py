@@ -173,8 +173,8 @@ class ConstructTimeTable:
             room = gi.class_rooms_dict[room_fi_number]
 
             # last two hours or not
-            rank0 = self.get_positions_ranking0(time_slot, course_event)
-            positions_ranking[room_fi_number].append(rank0)
+            #rank0 = self.get_positions_ranking0(time_slot, course_event)
+            #positions_ranking[room_fi_number].append(rank0)
 
             # home or not
             rank1 = self.get_positions_ranking1(room, course_event)
