@@ -18,6 +18,21 @@ class ImproveTimeTable:
         self.best_cost = sc.return_total_penalty_of_timetable(self.timetable)
         self.last_cost = self.best_cost
 
+    def improve(self):
+        """
+        This function will try to improve the timetable and it soft constraints
+        :return: we return the total penalty and the timetable
+
+        """
+        total_cost = sc.return_total_penalty_of_timetable(self.timetable)
+        print("Cost of tt before improve: " + str(total_cost))
+
+        self.simulated_annealing(10, 1.3, 5)
+
+        print("Cost after improve phase: " + str(self.best_cost))
+
+        return self.best_cost, self.timetable
+
     def get_count_events_on_time_slot(self, time_slot):
         """
         This function will count the total amount of events on this time slot
@@ -100,7 +115,7 @@ class ImproveTimeTable:
 
         # iterations = 0
 
-        while self.best_cost > 0 and time.clock() - starting_time < 60:
+        while self.best_cost > 0 and time.clock() - starting_time < 180:
             if no_improvement > 10:
                 step = 0
 

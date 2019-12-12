@@ -138,7 +138,8 @@ def return_only_one_hour_penalty(pos, event):
     """
     penalty = 0
     curricula = event.curricula
-    for curriculum in curricula:
+    for curriculum_id in curricula:
+        curriculum = gi.curricula_dict[curriculum_id]
         time_slot_list = curriculum.occupied_time_slots
         current_time_slot = pos[1]
         day = int(math.floor(current_time_slot/8))
@@ -218,10 +219,10 @@ def return_total_penalty_of_timetable(timetable):
     # a big value is a bad time_table with a lot of late hours
     late_hour_penalty = return_last_two_hour_penalty_all(timetable)
     one_hour_penalty = return_only_one_hour_penalty_all(timetable)
-    room_size = return_room_size_penalty_all(timetable)
-    not_home_penalty = return_not_home_penalty_all(timetable)
-    distance_penalty = return_not_home_penalty_all(timetable)
-    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) + float(room_size) + float(not_home_penalty) + 4*distance_penalty/75
+    #room_size = return_room_size_penalty_all(timetable)
+    #not_home_penalty = return_not_home_penalty_all(timetable)
+    #distance_penalty = return_not_home_penalty_all(timetable)
+    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) #+ float(room_size) #+ float(not_home_penalty) + 4*distance_penalty/75
     return total_penalty
 
 

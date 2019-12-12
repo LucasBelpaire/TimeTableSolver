@@ -3,7 +3,7 @@ import feasible_timetable as ft
 import copy
 import time
 import random
-
+import improve_time_table as it
 
 class TimeTableBuilder:
     def __init__(self, timetable, events_1, events_2, events_3, events_4, courses_set, start_time):
@@ -32,6 +32,12 @@ class TimeTableBuilder:
                                                   timetable=timetable)
         events_1, timetable = feasible_timetable.tabu_search()
         print("Tabu search on timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
+
+        print("Starting the improvement phase for type 1")
+        improve_tt_1 = it.ImproveTimeTable(timetable)
+        total_score, timetable = improve_tt_1.improve()
+        print("Improvement phase type 1 finished")
+
 
         # events type 2, split original timetable into two
         print("Starting initial construction of timetable type 2.  " + str(time.perf_counter() - self.start_time))
