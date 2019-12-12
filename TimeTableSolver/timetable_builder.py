@@ -5,6 +5,7 @@ import time
 import random
 import improve_time_table as it
 
+
 class TimeTableBuilder:
     def __init__(self, timetable, events_1, events_2, events_3, events_4, courses_set, start_time):
         self.timetable = timetable
@@ -33,11 +34,10 @@ class TimeTableBuilder:
         events_1, timetable = feasible_timetable.tabu_search()
         print("Tabu search on timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
 
-        print("Starting the improvement phase for type 1")
+        print("Starting the improvement on timetable type 1.  " + str(time.perf_counter() - self.start_time))
         improve_tt_1 = it.ImproveTimeTable(timetable)
         total_score, timetable = improve_tt_1.improve()
-        print("Improvement phase type 1 finished")
-
+        print("Improvement phase on timetable type 1 is finished.  " + str(time.perf_counter() - self.start_time))
 
         # events type 2, split original timetable into two
         print("Starting initial construction of timetable type 2.  " + str(time.perf_counter() - self.start_time))
@@ -251,11 +251,17 @@ class TimeTableBuilder:
             unplaced_events += copy.deepcopy(events_2a) + copy.deepcopy(events_2b)
         # type 3
         for i in range(3):
-            unplaced_events += copy.deepcopy(events_3a) + copy.deepcopy(events_3b) + copy.deepcopy(events_3c) + copy.deepcopy(events_3d)
+            unplaced_events += copy.deepcopy(events_3a) + copy.deepcopy(events_3b) \
+                               + copy.deepcopy(events_3c) + copy.deepcopy(events_3d)
         # type 4
-        unplaced_events += copy.deepcopy(events_4a) + copy.deepcopy(events_4b) + copy.deepcopy(events_4c) + copy.deepcopy(events_4d) + copy.deepcopy(events_4e) + copy.deepcopy(events_4f)
-        unplaced_events += copy.deepcopy(events_4g) + copy.deepcopy(events_4h) + copy.deepcopy(events_4i) + copy.deepcopy(events_4j) + copy.deepcopy(events_4k) + copy.deepcopy(events_4l)
-        print("unplaced: "+str(len(unplaced_events)))
+        unplaced_events += copy.deepcopy(events_4a) + copy.deepcopy(events_4b) \
+                           + copy.deepcopy(events_4c) + copy.deepcopy(events_4d) \
+                           + copy.deepcopy(events_4e) + copy.deepcopy(events_4f)
+        unplaced_events += copy.deepcopy(events_4g) + copy.deepcopy(events_4h) \
+                           + copy.deepcopy(events_4i) + copy.deepcopy(events_4j) \
+                           + copy.deepcopy(events_4k) + copy.deepcopy(events_4l)
+
+        print("unplaced: " + str(len(unplaced_events)))
         timetable_13.update_offset(12)
         random.shuffle(unplaced_events)
         ct_13 = ct.ConstructTimeTable(events_list=unplaced_events,

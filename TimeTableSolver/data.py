@@ -177,7 +177,6 @@ class TimeTable:
         This function will change the new offset and make sure that all relevant values get updated.
         Warning! only use this function when copying a timetable to use as the base timetable for the new week.
         """
-        previous_offset = self.offset
         self.offset = offset
 
         # iterate over all non None values in the dictionary

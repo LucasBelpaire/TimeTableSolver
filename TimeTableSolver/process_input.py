@@ -1,6 +1,5 @@
 import json
 import data
-import copy
 import math
 import general_info as gi
 

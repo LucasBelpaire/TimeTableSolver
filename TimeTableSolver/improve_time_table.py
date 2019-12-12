@@ -2,10 +2,9 @@ import time
 import math
 import soft_constraints as sc
 import neighborhood
-import general_info as gi
-import hard_constraints as hc
 import random
 import copy
+
 
 class ImproveTimeTable:
 
@@ -50,7 +49,6 @@ class ImproveTimeTable:
         list_ts_2 = []
 
         for oc_pos in self.timetable.occupied_positions:
-            removed_event = False
             if oc_pos[1] == ts_1:
                 removed_event = self.timetable.remove_course_from_position(oc_pos)
                 list_ts_1.append(((oc_pos[0], ts_2), removed_event))
