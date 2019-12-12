@@ -6,12 +6,12 @@ from haversine import haversine
 import math
 
 
-def return_not_home_penalty(room, course_event):
+def return_distance_penalty(room, course_event):
     """
-    This function calculates the not_home penalty for a given room and course.
-    :param room: instance of ClassRoom
-    :param course_event: instance of CourseEvent
-    :return: The total not_home penalty.
+    This function will calculate the total distance penalty for a specific course
+    :param room: the current room
+    :param course_event: the current course
+    :return: we return the total penalty
     """
     class_room_site = gi.sites_dict[room.site_id]
 
@@ -37,6 +37,24 @@ def return_not_home_penalty(room, course_event):
         total_penalty += gi.kilometer_penalty * distance
 
     return total_penalty
+
+
+def return_not_home_penalty(room, course_event):
+    """
+    This function calculates the not_home penalty for a given room and course.
+    :param room: instance of ClassRoom
+    :param course_event: instance of CourseEvent
+    :return: The total not_home penalty.
+    """
+    count_not_home = 0
+    curricula_of_courses = course_event.curricula
+
+    for curriculum_code in curricula_of_courses:
+        curriculum = gi.curricula_dict[curriculum_code]
+        if curriculum.home_site != room.site_id:
+            count_not_home += 1
+
+    return count_not_home
 
 
 def return_room_size_penalty_all(timetable):
@@ -120,7 +138,8 @@ def return_only_one_hour_penalty(pos, event):
     """
     penalty = 0
     curricula = event.curricula
-    for curriculum in curricula:
+    for curriculum_id in curricula:
+        curriculum = gi.curricula_dict[curriculum_id]
         time_slot_list = curriculum.occupied_time_slots
         current_time_slot = pos[1]
         day = int(math.floor(current_time_slot/8))
@@ -161,6 +180,36 @@ def return_only_one_hour_penalty_all(timetable):
     #             one_hour_total_penalty += 1
 
 
+def return_not_home_penalty_all(timetable):
+    """
+    This function will calculate the total amount of not_home penalties for all scheduled events
+    :param timetable: the current timetable
+    :return: we return the total penalty
+    """
+    total_penalty = 0
+    for pos, event in timetable.timetable.items():
+        if event is not None:
+            room = gi.class_rooms_dict[pos[0]]
+            total_penalty += return_not_home_penalty(room, event)
+
+    return total_penalty
+
+
+def return_distance_penalty_all(timetable):
+    """
+    this function will return all the distance penalties of all scheduled events
+    :param timetable: the current timetable
+    :return: we return the total distance penalty
+    """
+    total_penalty = 0
+    for pos, event in timetable.timetable.items():
+        if event is not None:
+            room = gi.class_rooms_dict[pos[0]]
+            total_penalty += return_distance_penalty(room, event)
+
+    return total_penalty
+
+
 def return_total_penalty_of_timetable(timetable):
     """
     This function will compute the total penalty for a specific timetable object
@@ -170,8 +219,10 @@ def return_total_penalty_of_timetable(timetable):
     # a big value is a bad time_table with a lot of late hours
     late_hour_penalty = return_last_two_hour_penalty_all(timetable)
     one_hour_penalty = return_only_one_hour_penalty_all(timetable)
-    room_size = return_room_size_penalty_all(timetable)
-    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) + float(room_size)
+    #room_size = return_room_size_penalty_all(timetable)
+    #not_home_penalty = return_not_home_penalty_all(timetable)
+    #distance_penalty = return_not_home_penalty_all(timetable)
+    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) #+ float(room_size) #+ float(not_home_penalty) + 4*distance_penalty/75
     return total_penalty
 
 
