@@ -27,8 +27,12 @@ class ConstructTimeTable:
             available_positions = []
             for room_fi_number, time_slot in self.timetable.empty_positions:
                 room = gi.class_rooms_dict[room_fi_number]
-                fits = hc.course_event_fits_into_time_slot(course_event, time_slot + self.timetable.offset*40) \
-                       and hc.room_capacity_constraint(course_event, room)
+                fits = hc.course_event_fits_into_time_slot(course_event,
+                                                           time_slot + self.timetable.offset * 40
+                                                           ) and hc.room_capacity_constraint(
+                                                                                             course_event,
+                                                                                             room
+                                                                                            )
                 if fits:
                     available_positions.append((room_fi_number, time_slot))
             # if no available positions were found, the event gets added to unplaced_events
@@ -64,7 +68,8 @@ class ConstructTimeTable:
             # and we want to order from biggest priority value to smallest
             rank1 = self.get_events_ranking1(course_event, lectures_amount[course_event.course_code])
             course_events_ranking[course_event.course_code].append(1 / rank1 if rank1 != 0 else 0)
-            course_events_ranking[course_event.course_code].append(self.get_events_ranking2(course_event, list(courses_set)))
+            course_events_ranking[course_event.course_code].append(
+                self.get_events_ranking2(course_event, list(courses_set)))
 
         courses_sorted = list(course_events)
         courses_sorted.sort(key=lambda cr: course_events_ranking[cr.course_code], reverse=True)
@@ -146,7 +151,8 @@ class ConstructTimeTable:
         amount = 0
         for curr_course in courses:
             if course_event.course_code != curr_course.code:
-                if self.have_common_lecturers(course_event, curr_course) or self.have_common_curricula(course_event, curr_course):
+                if self.have_common_lecturers(course_event, curr_course) or self.have_common_curricula(course_event,
+                                                                                                       curr_course):
                     amount += 1
         rank = amount
         return rank
