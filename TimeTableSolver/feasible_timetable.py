@@ -66,7 +66,7 @@ class FeasibleTimetable:
             return False
         # Success!
         self.last_distance = distance
-        if self.last_distance <= self.best_distance:
+        if self.last_distance < self.best_distance:
             self.best_feasible_tt = copy.deepcopy(self.timetable)
             self.best_distance = distance
         return True
@@ -190,14 +190,14 @@ class FeasibleTimetable:
             return False
         # Success!
         self.last_distance = distance
-        if self.last_distance <= self.best_distance:
+        if self.last_distance < self.best_distance:
             self.best_feasible_tt = copy.deepcopy(self.timetable)
             self.best_distance = distance
         return True
 
     def tabu_search(self):
         starting_time = time.clock()
-        max_time = 20
+        max_time = 120
         tabu_positions = []
         tabu_split = []
         tabu_unplaced_swap = []
