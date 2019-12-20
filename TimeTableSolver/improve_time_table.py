@@ -26,7 +26,7 @@ class ImproveTimeTable:
         total_cost = sc.return_total_penalty_of_timetable(self.timetable)
         print("Cost of tt before improve: " + str(total_cost))
 
-        self.simulated_annealing(10, 1.3, 5)
+        self.simulated_annealing(5, 1.3, 5)
 
         print("Cost after improve phase: " + str(self.best_cost))
 
@@ -98,6 +98,7 @@ class ImproveTimeTable:
     def simulated_annealing(self, t_max, t_min, steps):
         """
         This function will execute simulated annealing on the current time table
+        We tried a lot of different functions, but when we run SA for to long the overall score was halfed.
         :param t_max: The highest temp
         :param t_min:  The lowest Temp
         :param steps: count of steps
@@ -113,7 +114,7 @@ class ImproveTimeTable:
 
         # iterations = 0
 
-        while self.best_cost > 0 and time.clock() - starting_time < 180:
+        while self.best_cost > 0 and time.clock() - starting_time < 60:
             if no_improvement > 10:
                 step = 0
 
@@ -148,6 +149,10 @@ class ImproveTimeTable:
 
         successful, backup1, backup2 = neighborhood.swap_positions(self.timetable, [], pos1, pos2, feasibility=True)
 
+        while not successful:
+            pos1, pos2 = neighborhood.get_random_positions(self.timetable)
+            successful, backup1, backup2 = neighborhood.swap_positions(self.timetable, [], pos1, pos2, feasibility=True)
+
         if not successful:
             print("swap was no success")
             self.timetable = backup_time_table
@@ -163,7 +168,8 @@ class ImproveTimeTable:
 
         self.last_cost = total_cost
 
-        if total_cost < self.best_cost:
+        if total_cost <= self.best_cost:
+            print("TESTESTS")
             self.best_cost = total_cost
 
         return True
