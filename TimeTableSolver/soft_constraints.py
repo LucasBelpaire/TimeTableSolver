@@ -125,8 +125,25 @@ def return_to_many_straight_hours_penalty_all(timetable):
     :param timetable: the object that holds the time table
     :return: we return the total penalty
     """
-    # TODO: finish this function
-    return None
+
+    count = 0
+
+    for curriculum_id, curriculum in gi.curricula_dict.items():
+
+        events_of_curriculum = sorted(curriculum.occupied_time_slots)
+        # check if there are 4 or more events after each other
+        for i in range(len(events_of_curriculum) - 4):
+
+            sub_list_to_check = events_of_curriculum[i:(i+4)]
+            len(sub_list_to_check)
+
+            if sorted(sub_list_to_check) == sub_list_to_check:
+                # 4 events after each other
+                count += 1
+
+    print("aantal 4 of meer:" + str(count))
+
+    return count
 
 
 def return_only_one_hour_penalty(pos, event):
@@ -219,10 +236,11 @@ def return_total_penalty_of_timetable(timetable):
     # a big value is a bad time_table with a lot of late hours
     late_hour_penalty = return_last_two_hour_penalty_all(timetable)
     one_hour_penalty = return_only_one_hour_penalty_all(timetable)
+    four_or_more = return_to_many_straight_hours_penalty_all(timetable)
     #room_size = return_room_size_penalty_all(timetable)
     #not_home_penalty = return_not_home_penalty_all(timetable)
     #distance_penalty = return_not_home_penalty_all(timetable)
-    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) #+ float(room_size) #+ float(not_home_penalty) + 4*distance_penalty/75
+    total_penalty = float(late_hour_penalty) + float(one_hour_penalty) + float(four_or_more) #+ float(room_size) #+ float(not_home_penalty) + 4*distance_penalty/75
     return total_penalty
 
 
